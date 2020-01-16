@@ -210,15 +210,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             @Override
             public void deleteState(boolean isDelete) {
                 if (isDelete) {
-                    tvDeleteText.setText(getString(R.string.app_let_go_drag_delete));
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        tvDeleteText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_let_go_delete, 0, 0);
-                    }
+                    tvDeleteText.setText(
+                            getString(R.string.app_let_go_drag_delete));
+                    tvDeleteText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_let_go_delete, 0, 0);
                 } else {
                     tvDeleteText.setText(getString(R.string.app_drag_delete));
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        tvDeleteText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.picture_icon_delete, 0, 0);
-                    }
+                    tvDeleteText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.picture_icon_delete, 0, 0);
                 }
             }
 

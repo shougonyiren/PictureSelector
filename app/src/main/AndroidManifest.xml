@@ -24,18 +24,21 @@
         android:name=".App"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".StartPageActivity"
+        <activity android:name=".MyPictureSelector"></activity>
+        <activity
+            android:name=".StartPageActivity"
             android:theme="@style/SplashActivityTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:label="@string/title_activity_album_list"
             android:name=".AlbumListActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar"></activity>
+
         <meta-data
             android:name="android.max_aspect"
             android:value="2.1" />
@@ -49,7 +52,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".SimpleActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

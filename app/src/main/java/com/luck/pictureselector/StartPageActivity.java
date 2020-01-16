@@ -12,8 +12,10 @@ public class StartPageActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_start_page);
-        Thread myThread = new Thread() {//创建子线程
+        //setContentView(R.layout.activity_start_page);
+        startActivity(new Intent(this,AlbumListActivity.class));//设置启动页结束要打开的Activity
+        finish();
+/*        Thread myThread = new Thread() {//创建子线程
             @Override
             public void run() {
                 try {
@@ -26,6 +28,6 @@ public class StartPageActivity extends BaseActivity {
                 }
             }
         };
-        myThread.start();//启动线程
+        myThread.start();//启动线程*/
     }
 }
