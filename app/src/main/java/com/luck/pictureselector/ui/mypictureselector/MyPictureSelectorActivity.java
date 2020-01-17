@@ -86,7 +86,7 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
             //如果item不是最后一个，则执行拖拽
             needScaleBig = true;
             needScaleSmall = true;
-            int size = mAdapter.getList().size();
+            int size = mAdapter.getData().size();
             if (size != maxSelectNum) {
                 mItemTouchHelper.startDrag(holder);
                 return;
@@ -153,11 +153,11 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
                     if (itemViewType != GridImageAdapter.TYPE_CAMERA) {
                         if (fromPosition < toPosition) {
                             for (int i = fromPosition; i < toPosition; i++) {
-                                Collections.swap(mAdapter.getList(), i, i + 1);
+                                Collections.swap(mAdapter.getData(), i, i + 1);
                             }
                         } else {
                             for (int i = fromPosition; i > toPosition; i--) {
-                                Collections.swap(mAdapter.getList(), i, i - 1);
+                                Collections.swap(mAdapter.getData(), i, i - 1);
                             }
                         }
                         mAdapter.notifyItemMoved(fromPosition, toPosition);
