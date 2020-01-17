@@ -7,6 +7,8 @@ import android.os.Parcelable;
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverter;
+import androidx.room.TypeConverters;
 
 import com.luck.picture.lib.entity.LocalMedia;
 
@@ -23,9 +25,13 @@ public class Dynamic  implements Parcelable {
     private  long time;//时间戳
 
     private  String conent;//内容
-    @NonNull
+
+    @TypeConverters(LocalMediaTypeConverter.class)
     private  List<LocalMedia>  localMediaList=new ArrayList<LocalMedia>();//图视频集
 
+    public Dynamic() {
+        this.time = time;
+    }
 
     protected Dynamic(Parcel in) {
 
