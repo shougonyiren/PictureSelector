@@ -7,13 +7,15 @@ import android.os.Parcelable;
 import androidx.annotation.ColorInt;
 import androidx.annotation.StyleRes;
 
-import com.luck.picture.lib.camera.CustomCameraView;
-import com.luck.picture.lib.style.PictureWindowAnimationStyle;
-import com.luck.picture.lib.style.PictureCropParameterStyle;
-import com.luck.picture.lib.style.PictureParameterStyle;
 import com.luck.picture.lib.R;
+import com.luck.picture.lib.camera.CustomCameraView;
 import com.luck.picture.lib.engine.ImageEngine;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.listener.OnResultCallbackListener;
+import com.luck.picture.lib.listener.OnVideoSelectedPlayCallback;
+import com.luck.picture.lib.style.PictureCropParameterStyle;
+import com.luck.picture.lib.style.PictureParameterStyle;
+import com.luck.picture.lib.style.PictureWindowAnimationStyle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,6 +65,7 @@ public final class PictureSelectionConfig implements Parcelable {
     public int compressQuality;
     public int filterFileSize;
     public int language;
+    public boolean isMultipleRecyclerAnimation;
     public boolean isMultipleSkipCrop;
     public boolean isWeChatStyle;
     public boolean isUseCustomCamera;
@@ -97,6 +100,8 @@ public final class PictureSelectionConfig implements Parcelable {
     public boolean isWithVideoImage;
     public UCropOptions uCropOptions;
     public static ImageEngine imageEngine;
+    public static OnResultCallbackListener listener;
+    public static OnVideoSelectedPlayCallback customVideoPlayCallback;
     public List<LocalMedia> selectionMedias;
     public String cameraFileName;
     public boolean isCheckOriginalImage;
@@ -138,7 +143,7 @@ public final class PictureSelectionConfig implements Parcelable {
     public boolean isFallbackVersion2;
     public boolean isFallbackVersion3;
 
-    private void initDefaultValue() {
+    protected void initDefaultValue() {
         chooseMode = PictureMimeType.ofImage();
         camera = false;
         themeStyleId = R.style.picture_default_style;
@@ -187,6 +192,7 @@ public final class PictureSelectionConfig implements Parcelable {
         isWeChatStyle = false;
         isUseCustomCamera = false;
         isMultipleSkipCrop = true;
+        isMultipleRecyclerAnimation = true;
         freeStyleCropEnabled = false;
         circleDimmedLayer = false;
         showCropFrame = true;
@@ -210,6 +216,8 @@ public final class PictureSelectionConfig implements Parcelable {
         renameCropFileName = "";
         selectionMedias = new ArrayList<>();
         imageEngine = null;
+        listener = null;
+        customVideoPlayCallback = null;
         uCropOptions = null;
         style = null;
         cropStyle = null;
@@ -294,6 +302,7 @@ public final class PictureSelectionConfig implements Parcelable {
         dest.writeInt(this.compressQuality);
         dest.writeInt(this.filterFileSize);
         dest.writeInt(this.language);
+        dest.writeByte(this.isMultipleRecyclerAnimation ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isMultipleSkipCrop ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isWeChatStyle ? (byte) 1 : (byte) 0);
         dest.writeByte(this.isUseCustomCamera ? (byte) 1 : (byte) 0);
@@ -387,6 +396,7 @@ public final class PictureSelectionConfig implements Parcelable {
         this.compressQuality = in.readInt();
         this.filterFileSize = in.readInt();
         this.language = in.readInt();
+        this.isMultipleRecyclerAnimation = in.readByte() != 0;
         this.isMultipleSkipCrop = in.readByte() != 0;
         this.isWeChatStyle = in.readByte() != 0;
         this.isUseCustomCamera = in.readByte() != 0;

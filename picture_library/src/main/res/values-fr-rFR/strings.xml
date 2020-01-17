@@ -46,11 +46,14 @@
     <string name="picture_not_crop_data">Pas de données recadrées</string>
 
     <string name="picture_original_image">Original</string>
-    <string name="picture_send">l’envoi</string>
-    <string name="picture_send_num">l’envoi(%1$d/%2$d)</string>
+    <string name="picture_send">Finir</string>
+    <string name="picture_send_num">Finir(%1$d/%2$d)</string>
     <string name="picture_preview_num">voir(%1$d)</string>
     <string name="picture_select">Le choix</string>
     <string name="picture_data_exception">Anomalie des données de l’album...</string>
     <string name="picture_recording_time_is_short">La durée d’enregistrement est trop courte</string>
     <string name="picture_photo_camera">Prendre des photos, filmer</string>
+    <string name="picture_choose_max_seconds">Vous pouvez sélectionner la vidéo dans un maximum de %1$ds</string>
+    <string name="picture_choose_min_seconds">Impossible de sélectionner une vidéo en dessous de %1$ds</string>
+    <string name="picture_choose_limit_seconds">Vous ne pouvez sélectionner que les vidéos dans les %1$ds à %2$ds</string>
 </resources>

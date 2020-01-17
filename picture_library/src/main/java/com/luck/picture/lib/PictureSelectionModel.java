@@ -15,11 +15,14 @@ import com.luck.picture.lib.config.PictureSelectionConfig;
 import com.luck.picture.lib.config.UCropOptions;
 import com.luck.picture.lib.engine.ImageEngine;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.listener.OnResultCallbackListener;
+import com.luck.picture.lib.listener.OnVideoSelectedPlayCallback;
 import com.luck.picture.lib.style.PictureCropParameterStyle;
 import com.luck.picture.lib.style.PictureParameterStyle;
 import com.luck.picture.lib.style.PictureWindowAnimationStyle;
 import com.luck.picture.lib.tools.DoubleUtils;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,6 +117,15 @@ public class PictureSelectionModel {
      */
     public PictureSelectionModel isUseCustomCamera(boolean isUseCustomCamera) {
         selectionConfig.isUseCustomCamera = isUseCustomCamera;
+        return this;
+    }
+
+    /**
+     * @param callback Provide video playback control，Users are free to customize the video display interface
+     * @return
+     */
+    public PictureSelectionModel bindCustomPlayVideoCallback(OnVideoSelectedPlayCallback callback) {
+        selectionConfig.customVideoPlayCallback = new WeakReference<>(callback).get();
         return this;
     }
 
@@ -350,9 +362,23 @@ public class PictureSelectionModel {
     /**
      * @param cropWidth  crop width
      * @param cropHeight crop height
-     * @return
+     * @return this
+     * @deprecated Crop image output width and height
+     * {@link cropImageWideHigh()}
      */
+    @Deprecated
     public PictureSelectionModel cropWH(int cropWidth, int cropHeight) {
+        selectionConfig.cropWidth = cropWidth;
+        selectionConfig.cropHeight = cropHeight;
+        return this;
+    }
+
+    /**
+     * @param cropWidth  crop width
+     * @param cropHeight crop height
+     * @return this
+     */
+    public PictureSelectionModel cropImageWideHigh(int cropWidth, int cropHeight) {
         selectionConfig.cropWidth = cropWidth;
         selectionConfig.cropHeight = cropHeight;
         return this;
@@ -363,7 +389,7 @@ public class PictureSelectionModel {
      * @return
      */
     public PictureSelectionModel videoMaxSecond(int videoMaxSecond) {
-        selectionConfig.videoMaxSecond = videoMaxSecond * 1000;
+        selectionConfig.videoMaxSecond = (videoMaxSecond * 1000);
         return this;
     }
 
@@ -389,7 +415,7 @@ public class PictureSelectionModel {
     /**
      * @param width  glide width
      * @param height glide height
-     * @return 2.2.9开始Glide改为外部用户自己定义此方法没有意义了
+     * @return 2.2.9开始 Glide改为外部用户自己定义此方法没有意义了
      */
     @Deprecated
     public PictureSelectionModel glideOverride(@IntRange(from = 100) int width,
@@ -663,6 +689,18 @@ public class PictureSelectionModel {
         selectionConfig.isDragFrame = isDragFrame;
         return this;
     }
+
+    /**
+     * Whether the multi-graph clipping list is animated or not
+     *
+     * @param isAnimation
+     * @return
+     */
+    public PictureSelectionModel isMultipleRecyclerAnimation(boolean isAnimation) {
+        selectionConfig.isMultipleRecyclerAnimation = isAnimation;
+        return this;
+    }
+
 
     /**
      * 设置摄像头方向(前后 默认后置)
@@ -954,6 +992,81 @@ public class PictureSelectionModel {
         }
     }
 
+
+    /**
+     * Start to select media and wait for result.
+     *
+     * @param listener The resulting callback listens
+     */
+    public void forResult(OnResultCallbackListener listener) {
+        if (!DoubleUtils.isFastDoubleClick()) {
+            Activity activity = selector.getActivity();
+            if (activity == null || selectionConfig == null) {
+                return;
+            }
+            // 绑定回调监听
+            selectionConfig.listener = new WeakReference<>(listener).get();
+
+            Intent intent;
+            if (selectionConfig.camera && selectionConfig.isUseCustomCamera) {
+                intent = new Intent(activity, PictureCustomCameraActivity.class);
+            } else {
+                intent = new Intent(activity, selectionConfig.camera
+                        ? PictureSelectorCameraEmptyActivity.class :
+                        selectionConfig.isWeChatStyle ? PictureSelectorWeChatStyleActivity.class
+                                : PictureSelectorActivity.class);
+            }
+            Fragment fragment = selector.getFragment();
+            if (fragment != null) {
+                fragment.startActivity(intent);
+            } else {
+                activity.startActivity(intent);
+            }
+            PictureWindowAnimationStyle windowAnimationStyle = selectionConfig.windowAnimationStyle;
+            activity.overridePendingTransition(windowAnimationStyle != null &&
+                    windowAnimationStyle.activityEnterAnimation != 0 ?
+                    windowAnimationStyle.activityEnterAnimation :
+                    R.anim.picture_anim_enter, R.anim.picture_anim_fade_in);
+        }
+    }
+
+    /**
+     * Start to select media and wait for result.
+     *
+     * @param requestCode Identity of the request Activity or Fragment.
+     * @param listener    The resulting callback listens
+     */
+    public void forResult(int requestCode, OnResultCallbackListener listener) {
+        if (!DoubleUtils.isFastDoubleClick()) {
+            Activity activity = selector.getActivity();
+            if (activity == null || selectionConfig == null) {
+                return;
+            }
+            // 绑定回调监听
+            selectionConfig.listener = new WeakReference<>(listener).get();
+            Intent intent;
+            if (selectionConfig.camera && selectionConfig.isUseCustomCamera) {
+                intent = new Intent(activity, PictureCustomCameraActivity.class);
+            } else {
+                intent = new Intent(activity, selectionConfig.camera
+                        ? PictureSelectorCameraEmptyActivity.class :
+                        selectionConfig.isWeChatStyle ? PictureSelectorWeChatStyleActivity.class
+                                : PictureSelectorActivity.class);
+            }
+            Fragment fragment = selector.getFragment();
+            if (fragment != null) {
+                fragment.startActivityForResult(intent, requestCode);
+            } else {
+                activity.startActivityForResult(intent, requestCode);
+            }
+            PictureWindowAnimationStyle windowAnimationStyle = selectionConfig.windowAnimationStyle;
+            activity.overridePendingTransition(windowAnimationStyle != null &&
+                    windowAnimationStyle.activityEnterAnimation != 0 ?
+                    windowAnimationStyle.activityEnterAnimation :
+                    R.anim.picture_anim_enter, R.anim.picture_anim_fade_in);
+        }
+    }
+
     /**
      * 提供外部预览图片方法
      *
@@ -970,6 +1083,7 @@ public class PictureSelectionModel {
             throw new NullPointerException("This PictureSelector is Null");
         }
     }
+
 
     /**
      * 提供外部预览图片方法-带自定义下载保存路径
@@ -990,4 +1104,16 @@ public class PictureSelectionModel {
         }
     }
 
+    /**
+     * set preview video
+     *
+     * @param path
+     */
+    public void externalPictureVideo(String path) {
+        if (selector != null) {
+            selector.externalPictureVideo(path);
+        } else {
+            throw new NullPointerException("This PictureSelector is Null");
+        }
+    }
 }

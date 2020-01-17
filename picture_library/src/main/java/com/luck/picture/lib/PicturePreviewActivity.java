@@ -1,6 +1,7 @@
 package com.luck.picture.lib;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
@@ -21,6 +22,7 @@ import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.observable.ImagesObservable;
+import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.ScreenUtils;
 import com.luck.picture.lib.tools.StringUtils;
 import com.luck.picture.lib.tools.ToastUtils;
@@ -123,7 +125,11 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
         viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-                isPreviewEggs(config.previewEggs, position, positionOffsetPixels);
+                if (getContext() instanceof PictureSelectorPreviewWeChatStyleActivity) {
+                    //  不做处理
+                } else {
+                    isPreviewEggs(config.previewEggs, position, positionOffsetPixels);
+                }
             }
 
             @Override
@@ -337,7 +343,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
      * @param image
      * @return
      */
-    public boolean isSelected(LocalMedia image) {
+    protected boolean isSelected(LocalMedia image) {
         int size = selectImages.size();
         for (int i = 0; i < size; i++) {
             LocalMedia media = selectImages.get(i);
@@ -434,11 +440,26 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                         imageSize++;
                     }
                 }
-                if (PictureMimeType.eqVideo(image.getMimeType()) && config.maxVideoSelectNum > 0
-                        && videoSize >= config.maxVideoSelectNum && !check.isSelected()) {
-                    // 如果选择的是视频
-                    ToastUtils.s(getContext(), StringUtils.getMsg(getContext(), image.getMimeType(), config.maxVideoSelectNum));
-                    return;
+                if (PictureMimeType.eqVideo(image.getMimeType())) {
+                    if (config.maxVideoSelectNum > 0
+                            && videoSize >= config.maxVideoSelectNum && !check.isSelected()) {
+                        // 如果选择的是视频
+                        ToastUtils.s(getContext(), StringUtils.getMsg(getContext(), image.getMimeType(), config.maxVideoSelectNum));
+                        return;
+                    }
+
+                    if (!check.isSelected() && config.videoMinSecond > 0 && image.getDuration() < config.videoMinSecond) {
+                        // 视频小于最低指定的长度
+                        ToastUtils.s(getContext(), getContext().getString(R.string.picture_choose_min_seconds, config.videoMinSecond / 1000));
+                        return;
+                    }
+
+                    if (!check.isSelected() && config.videoMaxSecond > 0 && image.getDuration() > config.videoMaxSecond) {
+                        // 视频时长超过了指定的长度
+                        ToastUtils.s(getContext(),
+                                getContext().getString(R.string.picture_choose_max_seconds, config.videoMaxSecond / 1000));
+                        return;
+                    }
                 }
                 if (PictureMimeType.eqImage(image.getMimeType()) && imageSize >= config.maxSelectNum && !check.isSelected()) {
                     ToastUtils.s(getContext(), StringUtils.getMsg(getContext(), image.getMimeType(), config.maxSelectNum));
@@ -453,15 +474,44 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                         return;
                     }
                 }
-                if (PictureMimeType.eqVideo(mimeType) && config.maxVideoSelectNum > 0
-                        && currentSize >= config.maxVideoSelectNum && !check.isSelected()) {
-                    // 如果先选择的是视频
-                    ToastUtils.s(getContext(), StringUtils.getMsg(getContext(), mimeType, config.maxVideoSelectNum));
-                    return;
+                if (PictureMimeType.eqVideo(mimeType)) {
+                    if (config.maxVideoSelectNum > 0
+                            && currentSize >= config.maxVideoSelectNum && !check.isSelected()) {
+                        // 如果先选择的是视频
+                        ToastUtils.s(getContext(), StringUtils.getMsg(getContext(), mimeType, config.maxVideoSelectNum));
+                        return;
+                    }
+
+                    if (!check.isSelected() && config.videoMinSecond > 0 && image.getDuration() < config.videoMinSecond) {
+                        // 视频小于最低指定的长度
+                        ToastUtils.s(getContext(), getContext().getString(R.string.picture_choose_min_seconds, config.videoMinSecond / 1000));
+                        return;
+                    }
+
+                    if (!check.isSelected() && config.videoMaxSecond > 0 && image.getDuration() > config.videoMaxSecond) {
+                        // 视频时长超过了指定的长度
+                        ToastUtils.s(getContext(),
+                                getContext().getString(R.string.picture_choose_max_seconds, config.videoMaxSecond / 1000));
+                        return;
+                    }
                 } else {
                     if (currentSize >= config.maxSelectNum && !check.isSelected()) {
                         ToastUtils.s(getContext(), StringUtils.getMsg(getContext(), mimeType, config.maxSelectNum));
                         return;
+                    }
+                    if (PictureMimeType.eqVideo(image.getMimeType())) {
+                        if (!check.isSelected() && config.videoMinSecond > 0 && image.getDuration() < config.videoMinSecond) {
+                            // 视频小于最低指定的长度
+                            ToastUtils.s(getContext(), getContext().getString(R.string.picture_choose_min_seconds, config.videoMinSecond / 1000));
+                            return;
+                        }
+
+                        if (!check.isSelected() && config.videoMaxSecond > 0 && image.getDuration() > config.videoMaxSecond) {
+                            // 视频时长超过了指定的长度
+                            ToastUtils.s(getContext(),
+                                    getContext().getString(R.string.picture_choose_max_seconds, config.videoMaxSecond / 1000));
+                            return;
+                        }
                     }
                 }
             }
@@ -477,10 +527,13 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
             }
             isChangeSelectedData = true;
             if (isChecked) {
-                VoiceUtils.playVoice(getContext(), config.openClickSound);
+                VoiceUtils.getInstance().play();
                 // 如果是单选，则清空已选中的并刷新列表(作单一选择)
                 if (config.selectionMode == PictureConfig.SINGLE) {
                     selectImages.clear();
+                }
+                if (!TextUtils.isEmpty(image.getRealPath()) && image.getPath().startsWith("content://")) {
+                    image.setRealPath(PictureFileUtils.getPath(getContext(), Uri.parse(image.getPath())));
                 }
                 selectImages.add(image);
                 onSelectedChange(true, image);
@@ -613,6 +666,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                     cutInfo.setAndroidQToPath(media.getAndroidQToPath());
                     cutInfo.setId(media.getId());
                     cutInfo.setDuration(media.getDuration());
+                    cutInfo.setRealPath(media.getRealPath());
                     cuts.add(cutInfo);
                 }
                 if (imageNum <= 0) {
@@ -661,6 +715,7 @@ public class PicturePreviewActivity extends PictureBaseActivity implements
                     cutInfo.setAndroidQToPath(media.getAndroidQToPath());
                     cutInfo.setId(media.getId());
                     cutInfo.setDuration(media.getDuration());
+                    cutInfo.setRealPath(media.getRealPath());
                     cuts.add(cutInfo);
                 }
                 startCrop(cuts);

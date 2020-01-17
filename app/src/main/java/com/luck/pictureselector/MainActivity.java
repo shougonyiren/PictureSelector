@@ -38,6 +38,7 @@ import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.decoration.GridSpacingItemDecoration;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.language.LanguageConfig;
+import com.luck.picture.lib.listener.OnVideoSelectedPlayCallback;
 import com.luck.picture.lib.permissions.PermissionChecker;
 import com.luck.picture.lib.style.PictureCropParameterStyle;
 import com.luck.picture.lib.style.PictureParameterStyle;
@@ -62,7 +63,6 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements View.OnClickListener,
         RadioGroup.OnCheckedChangeListener, CompoundButton.OnCheckedChangeListener {
     private final static String TAG = MainActivity.class.getSimpleName();
-    private List<LocalMedia> selectList = new ArrayList<>();
     private RecyclerView mRecyclerView;
     private GridImageAdapter mAdapter;
     private int maxSelectNum = 9;
@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            selectList = savedInstanceState.getParcelableArrayList("selectorList");
+            // 被回收
         } else {
             clearCache();
         }
@@ -148,9 +148,20 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(4,
                 ScreenUtils.dip2px(this, 8), false));
-
         mAdapter = new GridImageAdapter(getContext(), onAddPicClickListener);
-        mAdapter.setList(selectList);
+        if (savedInstanceState != null && savedInstanceState.getParcelableArrayList("selectorList") != null) {
+            mAdapter.setList(savedInstanceState.getParcelableArrayList("selectorList"));
+        }
+
+//        List<LocalMedia> list = new ArrayList<>();
+//        LocalMedia m = new LocalMedia();
+//        m.setPath("https://wx1.sinaimg.cn/mw690/006e0i7xly1gaxqq5m7t8j31311g2ao6.jpg");
+//        LocalMedia m1 = new LocalMedia();
+//        m1.setPath("https://ww1.sinaimg.cn/bmiddle/bcd10523ly1g96mg4sfhag20c806wu0x.gif");
+//        list.add(m);
+//        list.add(m1);
+//        mAdapter.setList(list);
+
         mAdapter.setSelectMax(maxSelectNum);
         mRecyclerView.setAdapter(mAdapter);
         cb_original.setOnCheckedChangeListener((buttonView, isChecked) ->
@@ -160,6 +171,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             cb_single_back.setChecked(isChecked ? false : cb_single_back.isChecked());
         });
         mAdapter.setOnItemClickListener((position, v) -> {
+            List<LocalMedia> selectList = mAdapter.getData();
             if (selectList.size() > 0) {
                 LocalMedia media = selectList.get(position);
                 String mimeType = media.getMimeType();
@@ -167,12 +179,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 switch (mediaType) {
                     case PictureConfig.TYPE_VIDEO:
                         // 预览视频
-                        PictureSelector.create(MainActivity.this).externalPictureVideo(media.getPath());
+                        PictureSelector.create(MainActivity.this)
+                                .themeStyle(R.style.picture_default_style)
+                                .setPictureStyle(mPictureParameterStyle)// 动态自定义相册主题
+                                .externalPictureVideo(media.getPath());
                         break;
                     case PictureConfig.TYPE_AUDIO:
                         // 预览音频
-                        PictureSelector.create(MainActivity.this).externalPictureAudio(
-                                media.getPath().startsWith("content://") ? media.getAndroidQToPath() : media.getPath());
+                        PictureSelector.create(MainActivity.this)
+                                .externalPictureAudio(
+                                        media.getPath().startsWith("content://") ? media.getAndroidQToPath() : media.getPath());
                         break;
                     default:
                         // 预览图片 可自定长按保存路径
@@ -181,10 +197,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                        animationStyle.activityPreviewExitAnimation = R.anim.picture_anim_down_out;
                         PictureSelector.create(MainActivity.this)
                                 .themeStyle(R.style.picture_default_style) // xml设置主题
-                                //.setPictureStyle(mPictureParameterStyle)// 动态自定义相册主题
+                                .setPictureStyle(mPictureParameterStyle)// 动态自定义相册主题
                                 //.setPictureWindowAnimationStyle(animationStyle)// 自定义页面启动动画
                                 .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)// 设置相册Activity方向，不设置默认使用系统
                                 .isNotPreviewDownload(true)// 预览图片长按是否可以下载
+                                //.bindCustomPlayVideoCallback(callback)// 自定义播放回调控制，用户可以使用自己的视频播放界面
                                 .loadImageEngine(GlideEngine.createGlideEngine())// 外部传入图片加载引擎，必传项
                                 .openExternalPreview(position, selectList);
                         break;
@@ -196,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //如果item不是最后一个，则执行拖拽
             needScaleBig = true;
             needScaleSmall = true;
-            int size = mAdapter.getList().size();
+            int size = mAdapter.getData().size();
             if (size != maxSelectNum) {
                 mItemTouchHelper.startDrag(holder);
                 return;
@@ -266,11 +283,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     if (itemViewType != GridImageAdapter.TYPE_CAMERA) {
                         if (fromPosition < toPosition) {
                             for (int i = fromPosition; i < toPosition; i++) {
-                                Collections.swap(mAdapter.getList(), i, i + 1);
+                                Collections.swap(mAdapter.getData(), i, i + 1);
                             }
                         } else {
                             for (int i = fromPosition; i > toPosition; i--) {
-                                Collections.swap(mAdapter.getList(), i, i - 1);
+                                Collections.swap(mAdapter.getData(), i, i - 1);
                             }
                         }
                         mAdapter.notifyItemMoved(fromPosition, toPosition);
@@ -359,6 +376,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         // 注册外部预览图片删除按钮回调
         BroadcastManager.getInstance(getContext()).registerReceiver(broadcastReceiver,
                 BroadcastAction.ACTION_DELETE_PREVIEW_POSITION);
+
     }
 
     /**
@@ -372,6 +390,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         isUpward = false;
     }
 
+    /**
+     * 清空缓存包括裁剪、压缩、AndroidQToPath所生成的文件，注意调用时机必须是处理完本身的业务逻辑后调用；非强制性
+     */
     private void clearCache() {
         // 清空图片缓存，包括裁剪、压缩后的图片 注意:必须要在上传完成后调用 必须要获取权限
         if (PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -402,13 +423,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .isWithVideoImage(true)// 图片和视频是否可以同选,只在ofAll模式下有效
                         .maxSelectNum(maxSelectNum)// 最大图片选择数量
                         .minSelectNum(1)// 最小选择数量
-                        //.maxVideoSelectNum(1) // 视频最大选择数量，如果没有单独设置的需求则可以不设置，同用maxSelectNum字段
+                        .maxVideoSelectNum(1) // 视频最大选择数量，如果没有单独设置的需求则可以不设置，同用maxSelectNum字段
                         //.minVideoSelectNum(1)// 视频最小选择数量，如果没有单独设置的需求则可以不设置，同用minSelectNum字段
                         .imageSpanCount(4)// 每行显示个数
                         .isReturnEmpty(false)// 未选择数据时点击按钮是否可以返回
                         //.isAndroidQTransform(false)// 是否需要处理Android Q 拷贝至应用沙盒的操作，只针对compress(false); && enableCrop(false);有效,默认处理
                         .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)// 设置相册Activity方向，不设置默认使用系统
                         .isOriginalImageControl(cb_original.isChecked())// 是否显示原图控制按钮，如果设置为true则用户可以自由选择是否使用原图，压缩、裁剪功能将会失效
+                        //.bindCustomPlayVideoCallback(callback)// 自定义视频播放回调控制，用户可以使用自己的视频播放界面
                         //.cameraFileName(System.currentTimeMillis() +".jpg")    // 重命名拍照文件名、如果是相册拍照则内部会自动拼上当前时间戳防止重复，注意这个只在使用相机时可以使用，如果使用相机又开启了压缩或裁剪 需要配合压缩和裁剪文件名api
                         //.renameCompressFile(System.currentTimeMillis() +".jpg")// 重命名压缩文件名、 注意这个不要重复，只适用于单张图压缩使用
                         //.renameCropFileName(System.currentTimeMillis() + ".jpg")// 重命名裁剪文件名、 注意这个不要重复，只适用于单张图裁剪使用
@@ -421,6 +443,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .enablePreviewAudio(cb_preview_audio.isChecked()) // 是否可播放音频
                         .isCamera(cb_isCamera.isChecked())// 是否显示拍照按钮
                         //.isMultipleSkipCrop(false)// 多图裁剪时是否支持跳过，默认支持
+                        //.isMultipleRecyclerAnimation(false)// 多图裁剪底部列表显示动画效果
                         .isZoomAnim(true)// 图片列表点击 缩放效果 默认true
                         //.imageFormat(PictureMimeType.PNG)// 拍照保存图片格式后缀,默认jpeg
                         .enableCrop(cb_crop.isChecked())// 是否裁剪
@@ -443,22 +466,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .showCropFrame(cb_showCropFrame.isChecked())// 是否显示裁剪矩形边框 圆形裁剪时建议设为false
                         .showCropGrid(cb_showCropGrid.isChecked())// 是否显示裁剪矩形网格 圆形裁剪时建议设为false
                         .openClickSound(cb_voice.isChecked())// 是否开启点击声音
-                        .selectionMedia(selectList)// 是否传入已选图片
+                        .selectionMedia(mAdapter.getData())// 是否传入已选图片
                         //.isDragFrame(false)// 是否可拖动裁剪框(固定)
-                        //.videoMaxSecond(15)
                         //.videoMinSecond(10)
+                        //.videoMaxSecond(15)
+                        //.recordVideoSecond(10)//录制视频秒数 默认60s
                         //.previewEggs(false)// 预览图片时 是否增强左右滑动图片体验(图片滑动一半即可看到上一张是否选中)
                         //.cropCompressQuality(90)// 注：已废弃 改用cutOutQuality()
                         .cutOutQuality(90)// 裁剪输出质量 默认100
                         .minimumCompressSize(100)// 小于100kb的图片不压缩
                         //.cropWH()// 裁剪宽高比，设置如果大于图片本身宽高则无效
-                        //.rotateEnabled(true) // 裁剪是否可旋转图片
-                        //.scaleEnabled(true)// 裁剪是否可放大缩小图片
+                        //.cropImageWideHigh()// 裁剪宽高比，设置如果大于图片本身宽高则无效
+                        //.rotateEnabled(false) // 裁剪是否可旋转图片
+                        //.scaleEnabled(false)// 裁剪是否可放大缩小图片
                         //.videoQuality()// 视频录制质量 0 or 1
                         //.videoSecond()//显示多少秒以内的视频or音频也可适用
-                        //.recordVideoSecond()//录制视频秒数 默认60s
-                        //.setOutputCameraPath("/CustomPath")// 自定义拍照保存路径  注：已废弃
                         .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
+//                        .forResult(result -> {
+//                            for (LocalMedia media : result) {
+//                                Log.i(TAG, "是否压缩:" + media.isCompressed());
+//                                Log.i(TAG, "压缩:" + media.getCompressPath());
+//                                Log.i(TAG, "原图:" + media.getPath());
+//                                Log.i(TAG, "是否裁剪:" + media.isCut());
+//                                Log.i(TAG, "裁剪:" + media.getCutPath());
+//                                Log.i(TAG, "是否开启原图:" + media.isOriginal());
+//                                Log.i(TAG, "原图路径:" + media.getOriginalPath());
+//                                Log.i(TAG, "Android Q 特有Path:" + media.getAndroidQToPath());
+//                            }
+//                            mAdapter.setList(result);
+//                            mAdapter.notifyDataSetChanged();
+//                        });
             } else {
                 // 单独拍照
                 PictureSelector.create(MainActivity.this)
@@ -497,22 +534,42 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .showCropFrame(cb_showCropFrame.isChecked())// 是否显示裁剪矩形边框 圆形裁剪时建议设为false
                         .showCropGrid(cb_showCropGrid.isChecked())// 是否显示裁剪矩形网格 圆形裁剪时建议设为false
                         .openClickSound(cb_voice.isChecked())// 是否开启点击声音
-                        .selectionMedia(selectList)// 是否传入已选图片
-                        .previewEggs(false)//预览图片时 是否增强左右滑动图片体验(图片滑动一半即可看到上一张是否选中)
+                        .selectionMedia(mAdapter.getData())// 是否传入已选图片
                         //.previewEggs(false)// 预览图片时 是否增强左右滑动图片体验(图片滑动一半即可看到上一张是否选中)
                         //.cropCompressQuality(90)// 废弃 改用cutOutQuality()
                         .cutOutQuality(90)// 裁剪输出质量 默认100
                         .minimumCompressSize(100)// 小于100kb的图片不压缩
                         //.cropWH()// 裁剪宽高比，设置如果大于图片本身宽高则无效
+                        //.cropImageWideHigh()// 裁剪宽高比，设置如果大于图片本身宽高则无效
                         //.rotateEnabled() // 裁剪是否可旋转图片
                         //.scaleEnabled()// 裁剪是否可放大缩小图片
                         //.videoQuality()// 视频录制质量 0 or 1
                         //.videoSecond()////显示多少秒以内的视频or音频也可适用
                         .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
+//                        .forResult(result -> {
+//                            for (LocalMedia media : result) {
+//                                Log.i(TAG, "是否压缩:" + media.isCompressed());
+//                                Log.i(TAG, "压缩:" + media.getCompressPath());
+//                                Log.i(TAG, "原图:" + media.getPath());
+//                                Log.i(TAG, "是否裁剪:" + media.isCut());
+//                                Log.i(TAG, "裁剪:" + media.getCutPath());
+//                                Log.i(TAG, "是否开启原图:" + media.isOriginal());
+//                                Log.i(TAG, "原图路径:" + media.getOriginalPath());
+//                                Log.i(TAG, "Android Q 特有Path:" + media.getAndroidQToPath());
+//                            }
+//                            mAdapter.setList(result);
+//                            mAdapter.notifyDataSetChanged();
+//                        });
+
             }
         }
 
     };
+
+    /**
+     * 自定义播放逻辑处理，用户可以自己实现播放界面
+     */
+    private OnVideoSelectedPlayCallback callback = media -> ToastUtils.s(getContext(), media.getPath());
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -521,7 +578,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             switch (requestCode) {
                 case PictureConfig.CHOOSE_REQUEST:
                     // 图片选择结果回调
-                    selectList = PictureSelector.obtainMultipleResult(data);
+                    List<LocalMedia> selectList = PictureSelector.obtainMultipleResult(data);
                     // 例如 LocalMedia 里面返回五种path
                     // 1.media.getPath(); 原图path
                     // 2.media.getCutPath();裁剪后path，需判断media.isCut();切勿直接使用
@@ -1164,9 +1221,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mAdapter != null) {
+        if (mAdapter != null && mAdapter.getData() != null && mAdapter.getData().size() > 0) {
             outState.putParcelableArrayList("selectorList",
-                    (ArrayList<? extends Parcelable>) mAdapter.getList());
+                    (ArrayList<? extends Parcelable>) mAdapter.getData());
         }
     }
 
@@ -1181,8 +1238,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     extras = intent.getExtras();
                     int position = extras.getInt(PictureConfig.EXTRA_PREVIEW_DELETE_POSITION);
                     ToastUtils.s(getContext(), "delete image index:" + position);
-                    if (position < mAdapter.getItemCount()) {
-                        selectList.remove(position);
+                    if (position < mAdapter.getData().size()) {
+                        mAdapter.remove(position);
                         mAdapter.notifyItemRemoved(position);
                     }
                     break;

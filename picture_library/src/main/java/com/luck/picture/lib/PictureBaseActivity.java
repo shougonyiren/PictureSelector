@@ -40,6 +40,7 @@ import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.SdkVersionUtils;
 import com.luck.picture.lib.tools.StringUtils;
 import com.luck.picture.lib.tools.ToastUtils;
+import com.luck.picture.lib.tools.VoiceUtils;
 import com.yalantis.ucrop.UCrop;
 import com.yalantis.ucrop.model.CutInfo;
 
@@ -235,6 +236,10 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
                 colorPrimaryDark = AttrsUtils.getTypeValueColor(this, R.attr.colorPrimaryDark);
             }
         }
+
+        if (config.openClickSound) {
+            VoiceUtils.getInstance().init(getContext());
+        }
     }
 
     @Override
@@ -300,8 +305,9 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
                                     .setTargetDir(config.compressSavePath)
                                     .setCompressQuality(config.compressQuality)
                                     .setFocusAlpha(config.focusAlpha)
-                                    .setRenameListener(filePath -> config.renameCompressFileName)
+                                    .setNewCompressFileName(config.renameCompressFileName)
                                     .ignoreBy(config.minimumCompressSize).get();
+
                     // 线程切换
                     mHandler.sendMessage(mHandler.obtainMessage(MSG_ASY_COMPRESSION_RESULT_SUCCESS,
                             new Object[]{result, files}));
@@ -318,7 +324,7 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
                     .setCompressQuality(config.compressQuality)
                     .setTargetDir(config.compressSavePath)
                     .setFocusAlpha(config.focusAlpha)
-                    .setRenameListener(filePath -> config.renameCompressFileName)
+                    .setNewCompressFileName(config.renameCompressFileName)
                     .setCompressListener(new OnCompressListener() {
                         @Override
                         public void onStart() {
@@ -455,7 +461,7 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
         UCrop.of(uri, Uri.fromFile(file))
                 .withOptions(options)
                 .startAnimationActivity(this, config.windowAnimationStyle != null
-                        ? config.windowAnimationStyle.activityCropEnterAnimation : 0);
+                        ? config.windowAnimationStyle.activityCropEnterAnimation : R.anim.picture_anim_enter);
     }
 
     /**
@@ -534,6 +540,7 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
                 ? config.windowAnimationStyle.activityCropExitAnimation : 0);
         options.setNavBarColor(config.cropStyle != null ? config.cropStyle.cropNavBarColor : 0);
         options.withAspectRatio(config.aspect_ratio_x, config.aspect_ratio_y);
+        options.isMultipleRecyclerAnimation(config.isMultipleRecyclerAnimation);
         if (config.cropWidth > 0 && config.cropHeight > 0) {
             options.withMaxResultSize(config.cropWidth, config.cropHeight);
         }
@@ -566,7 +573,7 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
         UCrop.of(uri, Uri.fromFile(file))
                 .withOptions(options)
                 .startAnimationMultipleCropActivity(this, config.windowAnimationStyle != null
-                        ? config.windowAnimationStyle.activityCropEnterAnimation : 0);
+                        ? config.windowAnimationStyle.activityCropEnterAnimation : R.anim.picture_anim_enter);
     }
 
 
@@ -651,8 +658,12 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
                     media.setOriginalPath(media.getPath());
                 }
             }
-            Intent intent = PictureSelector.putIntentResult(images);
-            setResult(RESULT_OK, intent);
+            if (config.listener != null) {
+                config.listener.onResult(images);
+            } else {
+                Intent intent = PictureSelector.putIntentResult(images);
+                setResult(RESULT_OK, intent);
+            }
             closeActivity();
         }
     }
@@ -708,6 +719,13 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
                     && config.windowAnimationStyle.activityExitAnimation != 0 ?
                     config.windowAnimationStyle.activityExitAnimation : R.anim.picture_anim_exit);
         }
+        // 关闭主界面后才释放回调监听
+        if (getContext() instanceof PictureSelectorActivity) {
+            releaseResultListener();
+            if (config.openClickSound) {
+                VoiceUtils.getInstance().releaseSoundPool();
+            }
+        }
     }
 
     @Override
@@ -755,8 +773,8 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
                 long date = data.getLong(data.getColumnIndex(MediaStore.Images.Media.DATE_ADDED));
                 int duration = DateUtils.dateDiffer(date);
                 data.close();
-                // DCIM文件下最近时间30s以内的图片，可以判定是最新生成的重复照片
-                return duration <= 10 ? id : -1;
+                // DCIM文件下最近时间1s以内的图片，可以判定是最新生成的重复照片
+                return duration <= 1 ? id : -1;
             } else {
                 return -1;
             }
@@ -927,8 +945,12 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
                             && selectionMedias != null) {
                         images.addAll(images.size() > 0 ? images.size() - 1 : 0, selectionMedias);
                     }
-                    Intent intent = PictureSelector.putIntentResult(images);
-                    setResult(RESULT_OK, intent);
+                    if (config.listener != null) {
+                        config.listener.onResult(images);
+                    } else {
+                        Intent intent = PictureSelector.putIntentResult(images);
+                        setResult(RESULT_OK, intent);
+                    }
                     closeActivity();
                 }
                 break;
@@ -945,6 +967,16 @@ public abstract class PictureBaseActivity extends AppCompatActivity implements H
                 break;
         }
         return false;
+    }
+
+    /**
+     * 释放回调监听
+     */
+    private void releaseResultListener() {
+        if (config != null) {
+            config.listener = null;
+            config.customVideoPlayCallback = null;
+        }
     }
 
     @Override

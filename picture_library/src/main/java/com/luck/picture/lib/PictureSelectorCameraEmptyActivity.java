@@ -16,6 +16,7 @@ import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.immersive.ImmersiveManage;
 import com.luck.picture.lib.permissions.PermissionChecker;
+import com.luck.picture.lib.tools.BitmapUtils;
 import com.luck.picture.lib.tools.MediaUtils;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.SdkVersionUtils;
@@ -214,6 +215,7 @@ public class PictureSelectorCameraEmptyActivity extends PictureBaseActivity {
                 }
                 int lastIndexOf = config.cameraPath.lastIndexOf("/") + 1;
                 media.setId(lastIndexOf > 0 ? ValueOf.toLong(config.cameraPath.substring(lastIndexOf)) : -1);
+                media.setRealPath(path);
                 if (config.isUseCustomCamera && data != null) {
                     // 自定义拍照时已经在应用沙盒内生成了文件
                     String mediaPath = data.getStringExtra(PictureConfig.EXTRA_MEDIA_PATH);
@@ -225,7 +227,7 @@ public class PictureSelectorCameraEmptyActivity extends PictureBaseActivity {
                 size = file.length();
                 if (PictureMimeType.eqImage(mimeType)) {
                     int degree = PictureFileUtils.readPictureDegree(this, config.cameraPath);
-                    PictureFileUtils.rotateImage(degree, config.cameraPath);
+                    BitmapUtils.rotateImage(degree, config.cameraPath);
                     newSize = MediaUtils.getLocalImageWidthOrHeight(config.cameraPath);
                 } else {
                     newSize = MediaUtils.getLocalVideoSize(config.cameraPath);

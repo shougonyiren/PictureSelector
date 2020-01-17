@@ -204,7 +204,7 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
             //如果item不是最后一个，则执行拖拽
             needScaleBig = true;
             needScaleSmall = true;
-            int size = mAdapter.getList().size();
+            int size = mAdapter.getData().size();
             if (size != maxSelectNum) {
                 mItemTouchHelper.startDrag(holder);
                 return;
@@ -277,11 +277,11 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
                     if (itemViewType != GridImageAdapter.TYPE_CAMERA) {
                         if (fromPosition < toPosition) {
                             for (int i = fromPosition; i < toPosition; i++) {
-                                Collections.swap(mAdapter.getList(), i, i + 1);
+                                Collections.swap(mAdapter.getData(), i, i + 1);
                             }
                         } else {
                             for (int i = fromPosition; i > toPosition; i--) {
-                                Collections.swap(mAdapter.getList(), i, i - 1);
+                                Collections.swap(mAdapter.getData(), i, i - 1);
                             }
                         }
                         mAdapter.notifyItemMoved(fromPosition, toPosition);
@@ -383,6 +383,9 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
         isUpward = false;
     }
 
+    /**
+     * 清空缓存包括裁剪、压缩、AndroidQToPath所生成的文件，注意调用时机必须是处理完本身的业务逻辑后调用；非强制性
+     */
     private void clearCache() {
         // 清空图片缓存，包括裁剪、压缩后的图片 注意:必须要在上传完成后调用 必须要获取权限
         if (PermissionChecker.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
@@ -469,6 +472,30 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
                         //.recordVideoSecond()//录制视频秒数 默认60s
                         //.setOutputCameraPath("/CustomPath")// 自定义拍照保存路径  注：已废弃
                         .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
+//                        .forResult(result -> {
+//                            // 图片选择结果回调
+//                            selectList = result;
+//                            // 例如 LocalMedia 里面返回五种path
+//                            // 1.media.getPath(); 为原图path
+//                            // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
+//                            // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
+//                            // 4.media.getOriginalPath()); media.isOriginal());为true时此字段才有值
+//                            // 5.media.getAndroidQToPath();为Android Q版本特有返回的字段，此字段有值就用来做上传使用
+//                            // 如果同时开启裁剪和压缩，则取压缩路径为准因为是先裁剪后压缩
+//                            for (LocalMedia media : selectList) {
+//                                Log.i(TAG, "是否压缩:" + media.isCompressed());
+//                                Log.i(TAG, "压缩:" + media.getCompressPath());
+//                                Log.i(TAG, "原图:" + media.getPath());
+//                                Log.i(TAG, "是否裁剪:" + media.isCut());
+//                                Log.i(TAG, "裁剪:" + media.getCutPath());
+//                                Log.i(TAG, "是否开启原图:" + media.isOriginal());
+//                                Log.i(TAG, "原图路径:" + media.getOriginalPath());
+//                                Log.i(TAG, "Android Q 特有Path:" + media.getAndroidQToPath());
+//                            }
+//                            mAdapter.setList(selectList);
+//                            mAdapter.notifyDataSetChanged();
+//                        });
+
             } else {
                 // 单独拍照
                 PictureSelector.create(PhotoFragment.this)
@@ -518,6 +545,29 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
                         //.videoQuality()// 视频录制质量 0 or 1
                         //.videoSecond()////显示多少秒以内的视频or音频也可适用
                         .forResult(PictureConfig.CHOOSE_REQUEST);//结果回调onActivityResult code
+//                        .forResult(result -> {
+//                            // 图片选择结果回调
+//                            selectList = result;
+//                            // 例如 LocalMedia 里面返回五种path
+//                            // 1.media.getPath(); 为原图path
+//                            // 2.media.getCutPath();为裁剪后path，需判断media.isCut();是否为true
+//                            // 3.media.getCompressPath();为压缩后path，需判断media.isCompressed();是否为true
+//                            // 4.media.getOriginalPath()); media.isOriginal());为true时此字段才有值
+//                            // 5.media.getAndroidQToPath();为Android Q版本特有返回的字段，此字段有值就用来做上传使用
+//                            // 如果同时开启裁剪和压缩，则取压缩路径为准因为是先裁剪后压缩
+//                            for (LocalMedia media : selectList) {
+//                                Log.i(TAG, "是否压缩:" + media.isCompressed());
+//                                Log.i(TAG, "压缩:" + media.getCompressPath());
+//                                Log.i(TAG, "原图:" + media.getPath());
+//                                Log.i(TAG, "是否裁剪:" + media.isCut());
+//                                Log.i(TAG, "裁剪:" + media.getCutPath());
+//                                Log.i(TAG, "是否开启原图:" + media.isOriginal());
+//                                Log.i(TAG, "原图路径:" + media.getOriginalPath());
+//                                Log.i(TAG, "Android Q 特有Path:" + media.getAndroidQToPath());
+//                            }
+//                            mAdapter.setList(selectList);
+//                            mAdapter.notifyDataSetChanged();
+//                        });
             }
         }
 
@@ -1175,7 +1225,7 @@ public class PhotoFragment extends Fragment implements View.OnClickListener,
         super.onSaveInstanceState(outState);
         if (mAdapter != null) {
             outState.putParcelableArrayList("selectorList",
-                    (ArrayList<? extends Parcelable>) mAdapter.getList());
+                    (ArrayList<? extends Parcelable>) mAdapter.getData());
         }
     }
 
