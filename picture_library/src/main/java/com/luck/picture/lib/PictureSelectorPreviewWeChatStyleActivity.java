@@ -2,6 +2,7 @@ package com.luck.picture.lib;
 
 import android.text.TextUtils;
 import android.view.View;
+import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
@@ -22,6 +23,7 @@ import com.luck.picture.lib.tools.ScreenUtils;
  * @describe：PictureSelector 预览微信风格
  */
 public class PictureSelectorPreviewWeChatStyleActivity extends PicturePreviewActivity {
+    private final static int ALPHA_DURATION = 300;
     private TextView mPictureSendView;
     private RecyclerView mRvGallery;
     private TextView tvSelected;
@@ -215,26 +217,11 @@ public class PictureSelectorPreviewWeChatStyleActivity extends PicturePreviewAct
         goneParent();
         boolean enable = selectImages.size() != 0;
         if (enable) {
-            if (config.isWithVideoImage) {
-                // 混选模式
-                mPictureSendView.setText(config.selectionMode == PictureConfig.SINGLE ?
-                        config.style != null && !TextUtils.isEmpty(config.style.pictureRightDefaultText)
-                                ? config.style.pictureRightDefaultText
-                                : getString(R.string.picture_send)
-                        : getString(R.string.picture_send_num, selectImages.size(),
-                        config.maxVideoSelectNum + config.maxSelectNum));
-            } else {
-                String mimeType = selectImages.get(0).getMimeType();
-                int maxSize = PictureMimeType.eqVideo(mimeType) ? config.maxVideoSelectNum : config.maxSelectNum;
-                mPictureSendView.setText(config.selectionMode == PictureConfig.SINGLE ?
-                        config.style != null && !TextUtils.isEmpty(config.style.pictureRightDefaultText)
-                                ? config.style.pictureRightDefaultText
-                                : getString(R.string.picture_send)
-                        : getString(R.string.picture_send_num, selectImages.size(), maxSize));
-            }
-
+            initCompleteText();
             if (mRvGallery.getVisibility() == View.GONE) {
+                mRvGallery.animate().alpha(1).setDuration(ALPHA_DURATION).setInterpolator(new AccelerateInterpolator());
                 mRvGallery.setVisibility(View.VISIBLE);
+                bottomLine.animate().alpha(1).setDuration(ALPHA_DURATION).setInterpolator(new AccelerateInterpolator());
                 bottomLine.setVisibility(View.VISIBLE);
                 // 重置一片内存区域 不然在其他地方添加也影响这里的数量
                 mGalleryAdapter.setNewData(selectImages);
@@ -245,8 +232,40 @@ public class PictureSelectorPreviewWeChatStyleActivity extends PicturePreviewAct
             } else {
                 mPictureSendView.setText(getString(R.string.picture_send));
             }
+            mRvGallery.animate().alpha(0).setDuration(ALPHA_DURATION).setInterpolator(new AccelerateInterpolator());
             mRvGallery.setVisibility(View.GONE);
+            bottomLine.animate().alpha(0).setDuration(ALPHA_DURATION).setInterpolator(new AccelerateInterpolator());
             bottomLine.setVisibility(View.GONE);
+        }
+    }
+
+
+    /**
+     * 设置完成按钮文字
+     */
+    private void initCompleteText() {
+        if (config.isWithVideoImage) {
+            // 混选模式
+            if (config.selectionMode == PictureConfig.SINGLE) {
+                mPictureSendView.setText(config.style != null && !TextUtils.isEmpty(config.style.pictureRightDefaultText)
+                        ? config.style.pictureRightDefaultText : getString(R.string.picture_send));
+            } else {
+                mPictureSendView.setText(config.style != null && !TextUtils.isEmpty(config.style.pictureRightDefaultText)
+                        ? config.style.pictureRightDefaultText : getString(R.string.picture_send_num, selectImages.size(),
+                        config.maxVideoSelectNum + config.maxSelectNum));
+            }
+
+        } else {
+            String mimeType = selectImages.get(0).getMimeType();
+            int maxSize = PictureMimeType.eqVideo(mimeType) ? config.maxVideoSelectNum : config.maxSelectNum;
+            if (config.selectionMode == PictureConfig.SINGLE) {
+                mPictureSendView.setText(config.style != null && !TextUtils.isEmpty(config.style.pictureRightDefaultText)
+                        ? config.style.pictureRightDefaultText : getString(R.string.picture_send));
+            } else {
+                mPictureSendView.setText(config.style != null && !TextUtils.isEmpty(config.style.pictureRightDefaultText)
+                        ? config.style.pictureRightDefaultText
+                        : getString(R.string.picture_send_num, selectImages.size(), maxSize));
+            }
         }
     }
 }

@@ -1,6 +1,7 @@
 
 在 PictureSelector 2.0的基础上 实现自定义相册
 # PictureSelector 2.0
+# PictureSelector 2.0 
    一款针对Android平台下的图片选择器，支持从相册获取图片、视频、音频&拍照，支持裁剪(单图or多图裁剪)、压缩、主题自定义配置等功能，支持动态获取权限&适配Android 5.0+系统的开源图片选择框架。<br>
   
   <br>项目一直维护(有bug修复完一般会在周末更新)，如果有bug请描述清楚并可以提Issues，个人QQ 893855882 希望用得着的朋友点个star。 <br>
@@ -138,23 +139,23 @@ PictureSelector.create(this).externalPictureVideo(video_path);
 
 | 默认样式 | 默认样式预览 | 默认样式多图裁剪 |
 |:-----------:|:--------:|:---------:|
-|![](image/picture_default_style_1.jpg) | <img src="image/picture_default_style_2.jpg"/> | ![](image/picture_default_style_3.jpg)|  
+|![](image/picture_default_style_1.jpg) | <img src="image/picture_default_style_2.jpg"/> | ![](image/picture_default_style_new_3.jpg)|  
 
 | 数字风格 | 数字风格预览  | 数字风格多图裁剪 |
 |:-----------:|:--------:|:---------:|
-|![](image/picture_num_style_1.jpg) | ![](image/picture_num_style_2.jpg) | ![](image/picture_num_style_3.jpg)| 
+|![](image/picture_num_style_new_1.jpg) | ![](image/picture_num_style_new_2.jpg) | ![](image/picture_num_style_new_3.jpg)| 
 
 | 白色主题风格 | 白色主题风格预览  | 白色主题风格单图裁剪 |
 |:-----------:|:--------:|:---------:|
-|![](image/picture_sina_style_1.jpg) | ![](image/picture_sina_style_2.jpg) | ![](image/picture_sina_style_3.jpg)| 
+|![](image/picture_sina_style_1.jpg) | ![](image/picture_sina_style_new_2.jpg) | ![](image/picture_sina_style_new_3.jpg)| 
 
 | 仿微信风格 | 仿微信风格预览 | 仿微信风格多图裁剪 |
 |:-----------:|:--------:|:---------:|
-|![](image/picture_wechat_style_1.jpg) | ![](image/picture_wechat_style_2.jpg) | ![](image/picture_wechat_style_3.jpg)| 
+|![](image/picture_wechat_style_1.jpg) | ![](image/picture_wechat_style_2.jpg) | ![](image/picture_wechat_style_new_3.jpg)| 
 
 | 相册目录 | 仿微信风格单选模式 | 单图圆形头像裁剪|
 |:-----------:|:--------:|:--------:|
-|![](image/picture_wechat_album_style.jpg) |![](image/picture_wechat_single_style_3.jpg) | ![](image/picture_circular_crop_style.jpg)| 
+|![](image/picture_wechat_album_style.jpg) |![](image/picture_wechat_single_style_3.jpg) | ![](image/picture_circular_crop_new_style.jpg)| 
 
 | 白色主题风格 | 视频 | 音频 |
 |:-----------:|:-----------:|:--------:|
