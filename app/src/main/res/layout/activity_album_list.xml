@@ -29,10 +29,5 @@
         android:layout_margin="@dimen/fab_margin"
         android:layout_width="wrap_content"
         app:srcCompat="@android:drawable/ic_dialog_email" />
-    <FrameLayout
-        android:id="@+id/select_layout"
-        android:elevation="10dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

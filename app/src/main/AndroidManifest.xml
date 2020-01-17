@@ -24,7 +24,6 @@
         android:name=".App"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".MyPictureSelector"></activity>
         <activity
             android:name=".StartPageActivity"
             android:theme="@style/SplashActivityTheme">
@@ -34,6 +33,8 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.mypictureselector.MyPictureSelectorActivity"></activity>
+
         <activity
             android:label="@string/title_activity_album_list"
             android:name=".AlbumListActivity"

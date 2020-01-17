@@ -1,5 +1,6 @@
 package com.luck.pictureselector.ui.mypictureselector;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.app.Activity;
@@ -7,6 +8,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.broadcast.BroadcastAction;
@@ -33,6 +36,7 @@ import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.decoration.GridSpacingItemDecoration;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.language.LanguageConfig;
+import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.ScreenUtils;
 import com.luck.picture.lib.tools.ToastUtils;
 import com.luck.pictureselector.AlbumListActivity;
@@ -46,7 +50,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MyPictureSelectorFragment extends Fragment {
+public class MyPictureSelectorActivity extends AppCompatActivity {
 
 
     private static final String TAG = "哈哈哈哈哈";
@@ -62,21 +66,19 @@ public class MyPictureSelectorFragment extends Fragment {
     private TextView tvDeleteText;
     private boolean isUpward;
 
-    public static MyPictureSelectorFragment newInstance() {
-        return new MyPictureSelectorFragment();
-    }
-
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        FullyGridLayoutManager manager = new FullyGridLayoutManager(getContext(),
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.my_picture_selector_fragment);
+        mViewModel = ViewModelProviders.of(this).get(MyPictureSelectorViewModel.class);
+        FullyGridLayoutManager manager = new FullyGridLayoutManager(this,
                 4, GridLayoutManager.VERTICAL, false);
-        mRecyclerView=view.findViewById(R.id.m_recycler);
-        tvDeleteText=view.findViewById(R.id.tv_delete_text);
+        mRecyclerView=findViewById(R.id.m_recycler);
+        tvDeleteText=findViewById(R.id.tv_delete_text);
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(4,
-                ScreenUtils.dip2px(getContext(), 8), false));
-        mAdapter = new GridImageAdapter(getContext(), onAddPicClickListener);
+                ScreenUtils.dip2px(this, 8), false));
+        mAdapter = new GridImageAdapter(this, onAddPicClickListener);
         mAdapter.setList(selectList);
         mAdapter.setSelectMax(100);
         mRecyclerView.setAdapter(mAdapter);
@@ -98,14 +100,10 @@ public class MyPictureSelectorFragment extends Fragment {
             public void deleteState(boolean isDelete) {
                 if (isDelete) {
                     tvDeleteText.setText(getString(R.string.app_let_go_drag_delete));
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        tvDeleteText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_let_go_delete, 0, 0);
-                    }
+                    tvDeleteText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.ic_let_go_delete, 0, 0);
                 } else {
                     tvDeleteText.setText(getString(R.string.app_drag_delete));
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-                        tvDeleteText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.picture_icon_delete, 0, 0);
-                    }
+                    tvDeleteText.setCompoundDrawablesRelativeWithIntrinsicBounds(0, R.drawable.picture_icon_delete, 0, 0);
                 }
             }
 
@@ -246,30 +244,15 @@ public class MyPictureSelectorFragment extends Fragment {
         mItemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         // 注册外部预览图片删除按钮回调
-        BroadcastManager.getInstance(getActivity()).registerReceiver(broadcastReceiver,
+        BroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
                 BroadcastAction.ACTION_DELETE_PREVIEW_POSITION);
 
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-
-        return inflater.inflate(R.layout.my_picture_selector_fragment, container, false);
-    }
-
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(MyPictureSelectorViewModel.class);
-        // TODO: Use the ViewModel
-
-    }
     private GridImageAdapter.onAddPicClickListener onAddPicClickListener = new GridImageAdapter.onAddPicClickListener() {
         @Override
         public void onAddPicClick() {
-            mViewModel.select(MyPictureSelectorFragment.this,selectList);
+            mViewModel.select(MyPictureSelectorActivity.this,selectList);
         }
     };
 
@@ -334,5 +317,28 @@ public class MyPictureSelectorFragment extends Fragment {
         }
     };
 
+    /**
+     * 获取权限
+     * @param requestCode
+     * @param permissions
+     * @param grantResults
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PictureConfig.APPLY_STORAGE_PERMISSIONS_CODE:
+                // 存储权限
+                for (int i = 0; i < grantResults.length; i++) {
+                    if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                        PictureFileUtils.deleteCacheDirFile(MyPictureSelectorActivity.this, PictureMimeType.ofImage());
+                    } else {
+                        Toast.makeText(MyPictureSelectorActivity.this,
+                                getString(R.string.picture_jurisdiction), Toast.LENGTH_SHORT).show();
+                    }
+                }
+                break;
+        }
+    }
 
 }

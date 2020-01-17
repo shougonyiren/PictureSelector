@@ -1,5 +1,6 @@
 package com.luck.pictureselector.ui.mypictureselector;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 
@@ -33,8 +34,8 @@ public class MyPictureSelectorViewModel extends ViewModel {
     protected void onCleared() {
         super.onCleared();
     }
-    public void  select(Fragment fragment,List<LocalMedia> selectList){
-        PictureSelector.create(fragment)
+    public void  select(Activity activity, List<LocalMedia> selectList){
+        PictureSelector.create(activity)
                 .openGallery(chooseMode)// 全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()
                 .loadImageEngine(GlideEngine.createGlideEngine())// 外部传入图片加载引擎，必传项
                 //.setPictureStyle()
