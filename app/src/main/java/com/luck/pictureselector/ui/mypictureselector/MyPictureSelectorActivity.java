@@ -7,24 +7,21 @@ import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Canvas;
-import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
+import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,13 +32,10 @@ import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.decoration.GridSpacingItemDecoration;
 import com.luck.picture.lib.entity.LocalMedia;
-import com.luck.picture.lib.language.LanguageConfig;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.ScreenUtils;
 import com.luck.picture.lib.tools.ToastUtils;
-import com.luck.pictureselector.AlbumListActivity;
 import com.luck.pictureselector.FullyGridLayoutManager;
-import com.luck.pictureselector.GlideEngine;
 import com.luck.pictureselector.R;
 import com.luck.pictureselector.adapter.GridImageAdapter;
 import com.luck.pictureselector.listener.DragListener;
@@ -65,16 +59,32 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
     private int maxSelectNum = 9;
     private TextView tvDeleteText;
     private boolean isUpward;
+    private ImageView select_back;
+    private Button select_finish;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.my_picture_selector_fragment);
+        setContentView(R.layout.my_picture_selector_activity);
         mViewModel = ViewModelProviders.of(this).get(MyPictureSelectorViewModel.class);
         FullyGridLayoutManager manager = new FullyGridLayoutManager(this,
                 4, GridLayoutManager.VERTICAL, false);
         mRecyclerView=findViewById(R.id.m_recycler);
         tvDeleteText=findViewById(R.id.tv_delete_text);
+        select_finish=findViewById(R.id.select_finish);
+        select_finish.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //TODO select_finish
+            }
+        });
+        select_back=findViewById(R.id.select_back);
+        select_back.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
         mRecyclerView.setLayoutManager(manager);
         mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(4,
                 ScreenUtils.dip2px(this, 8), false));
@@ -316,6 +326,12 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
             }
         }
     };
+
+    @Override
+    public void onBackPressed() {
+        //TODO onBackPressed()
+        super.onBackPressed();
+    }
 
     /**
      * 获取权限
