@@ -34,4 +34,6 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:${cfgs.lifecycle_version}"
     api "androidx.camera:camera-core:${cfgs.camerax_version}"
     api "androidx.camera:camera-camera2:${cfgs.camerax_version}"
+    implementation 'androidx.room:room-runtime:2.2.3'
+    annotationProcessor 'androidx.room:room-compiler:2.2.3'
 }
