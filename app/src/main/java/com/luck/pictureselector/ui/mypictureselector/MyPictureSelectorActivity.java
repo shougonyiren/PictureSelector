@@ -16,15 +16,19 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.room.Room;
 
 import android.util.Log;
 import android.view.View;
 import android.view.animation.AccelerateInterpolator;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.liuaho.repository.Dynamic;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.broadcast.BroadcastAction;
 import com.luck.picture.lib.broadcast.BroadcastManager;
@@ -35,6 +39,7 @@ import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.ScreenUtils;
 import com.luck.picture.lib.tools.ToastUtils;
+import com.luck.pictureselector.AppDatabase;
 import com.luck.pictureselector.FullyGridLayoutManager;
 import com.luck.pictureselector.R;
 import com.luck.pictureselector.adapter.GridImageAdapter;
@@ -43,6 +48,10 @@ import com.luck.pictureselector.listener.DragListener;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+
+import io.reactivex.Completable;
+import io.reactivex.CompletableObserver;
+import io.reactivex.disposables.Disposable;
 
 public class MyPictureSelectorActivity extends AppCompatActivity {
 
@@ -61,6 +70,15 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
     private boolean isUpward;
     private ImageView select_back;
     private Button select_finish;
+    private EditText content_editText;
+    //得到AppDatabase 对象
+    private AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+            AppDatabase.class, "roomDemo-database")
+            //下面注释表示允许主线程进行数据库操作，但是不推荐这样做。
+            //他可能造成主线程lock以及anr
+            //所以我们的操作都是在新线程完成的
+            // .allowMainThreadQueries()
+            .build();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -76,6 +94,26 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //TODO select_finish
+                Dynamic dynamic=new Dynamic(content_editText.getText().toString(),selectList);
+                Completable completable = db.dynamicDao().insertOneAnime(dynamic);
+                completable.subscribe(new CompletableObserver() {
+                    @Override
+                    public void onSubscribe(Disposable d) {
+
+                    }
+
+                    @Override
+                    public void onComplete() {
+                        //Log.d("wch", "数据插入成功");
+                        onBackPressed();
+                    }
+
+                    @Override
+                    public void onError(Throwable e) {
+                        ToastUtils.s(getBaseContext(),"请重试");
+                        Log.d("wch", "数据插入失败:" + e.getCause().getMessage());
+                    }
+                });
             }
         });
         select_back=findViewById(R.id.select_back);

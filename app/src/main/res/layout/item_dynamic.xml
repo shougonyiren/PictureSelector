@@ -13,13 +13,13 @@
         android:text="TextViewsfafafasfasfsafasgasgasgasgasgsgagdzfvsdnfsdjgvnfdlnhetmhketnhontelhntd;kgnlrgnlrnsgklsrnglrsnhndklhndlhndklnbd.fmb" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_item_AlbumList"
         android:layout_height="wrap_content"
         android:layout_width="match_parent" >
 
     </androidx.recyclerview.widget.RecyclerView>
 
     <TextView
-        android:ems="10"
         android:id="@+id/dynamic_time_text"
         android:layout_height="wrap_content"
         android:layout_width="wrap_content" />

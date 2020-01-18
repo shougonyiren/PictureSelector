@@ -13,6 +13,7 @@ import androidx.room.TypeConverters;
 import com.luck.picture.lib.entity.LocalMedia;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -22,12 +23,18 @@ import java.util.List;
 public class Dynamic  implements Parcelable {
     @NonNull
     @PrimaryKey
-    private  long time;//时间戳
+    private Date time;//时间戳
 
     private  String conent;//内容
 
     @TypeConverters(LocalMediaTypeConverter.class)
     private  List<LocalMedia>  localMediaList=new ArrayList<LocalMedia>();//图视频集
+
+    public Dynamic(String conent, List<LocalMedia> localMediaList) {
+        this.conent = conent;
+        this.localMediaList = localMediaList;
+        this.time=new Date();
+    }
 
     public Dynamic() {
         this.time = time;
@@ -55,16 +62,17 @@ public class Dynamic  implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int i) {
-        dest.writeLong(time);
+        dest.writeString(time.toString());
         dest.writeString(conent);
         dest.writeArray(new List[]{localMediaList});
     }
 
-    public long getTime() {
+    @NonNull
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(long time) {
+    public void setTime(@NonNull Date time) {
         this.time = time;
     }
 

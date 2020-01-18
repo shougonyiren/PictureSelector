@@ -85,11 +85,16 @@
         app:layout_constraintTop_toBottomOf="@+id/appBarLayout"
         />
 
-    <FrameLayout
-        android:layout_height="0dp"
+    <EditText
+        android:id="@+id/content_editText"
         android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:hint="在此输入文字"
+        android:gravity="top|left"
         app:layout_constraintBottom_toTopOf="@+id/tv_delete_text"
-        app:layout_constraintTop_toBottomOf="@+id/m_recycler" />
+        app:layout_constraintTop_toBottomOf="@+id/m_recycler"
+        app:layout_constraintVertical_bias="0.0"
+        tools:layout_editor_absoluteX="0dp" />
 
     <TextView
         android:background="@color/app_color_red"
