@@ -9,7 +9,6 @@ import com.liuaho.repository.Dynamic;
 
 import java.util.List;
 
-import io.reactivex.Completable;
 
 
 @Dao
@@ -21,7 +20,7 @@ public interface DynamicDao {
     DataSource.Factory<Long,Dynamic> findAll(); //根据名字加载动漫
 
     @Insert
-    Completable insertOneAnime(Dynamic anime); //插入一条动漫信息
+    void insertOneAnime(Dynamic anime); //插入一条动漫信息
 
     @Insert
     void insertMultiAnimes(Dynamic... animes); //插入多条动漫信息
