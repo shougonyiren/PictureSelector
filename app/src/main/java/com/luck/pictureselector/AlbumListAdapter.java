@@ -78,15 +78,7 @@ public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.
         holder.timetView.setText(Objects.requireNonNull(getItem(position)).getTime().toString());
         holder.extendTextview.setText(Objects.requireNonNull(getItem(position)).getConent());
         itemAdapter itemAdapter=new itemAdapter(getItem(position).getpaths());
-        /*FullyGridLayoutManager manager = new FullyGridLayoutManager(context,
-                4, GridLayoutManager.VERTICAL, false);
-
-        holder.recyclerView.addItemDecoration(new GridSpacingItemDecoration(4,
-                ScreenUtils.dip2px(context, 8), false));*/
-        LinearLayoutManager manager = new LinearLayoutManager(context);
         holder.recyclerView.setAdapter(itemAdapter);
-        holder.recyclerView.setLayoutManager(manager);
-
     }
 
 
@@ -100,6 +92,9 @@ public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.
             extendTextview=itemView.findViewById(R.id.content_text);
             recyclerView=itemView.findViewById(R.id.rv_item_AlbumList);
             timetView=itemView.findViewById(R.id.dynamic_time_text);
+            RecyclerView.LayoutManager manager = new GridLayoutManager(itemView.getContext(), 3);
+            /*manager.setAutoMeasureEnabled(true);*/
+            recyclerView.setLayoutManager(manager);
         }
     }
     private class  itemAdapter extends RecyclerView.Adapter<Imageviewholder>{
@@ -135,14 +130,14 @@ public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.
 
         @Override
         public int getItemCount() {
-            return 0;
+            return paths.size();
         }
     }
     public class  Imageviewholder extends RecyclerView.ViewHolder{
         ImageView imageView;
         public Imageviewholder(@NonNull View itemView) {
             super(itemView);
-            itemView=itemView.findViewById(R.id.item_image);
+            imageView=itemView.findViewById(R.id.item_image);
         }
     }
     /**
