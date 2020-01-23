@@ -1,4 +1,4 @@
-package com.luck.picture.lib.photoview;
+package com.luck.picture.lib.photoviewluck;
 
 /**
  * Interface definition for a callback to be invoked when the photo is experiencing a drag event

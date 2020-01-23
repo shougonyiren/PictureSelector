@@ -1,59 +1,34 @@
-package com.luck.pictureselector;
+package com.luck.pictureselector.ui.AlbumList;
 
 import android.content.Intent;
-import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.liuaho.repository.Dynamic;
-import com.luck.picture.lib.PictureSelector;
-import com.luck.picture.lib.config.PictureConfig;
-import com.luck.picture.lib.config.PictureMimeType;
-import com.luck.picture.lib.entity.LocalMedia;
-import com.luck.picture.lib.language.LanguageConfig;
-import com.luck.picture.lib.tools.PictureFileUtils;
+import com.luck.pictureselector.R;
 import com.luck.pictureselector.ViewModel.AlbumListViewModel;
 import com.luck.pictureselector.ui.mypictureselector.MyPictureSelectorActivity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.paging.PagedList;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.room.Room;
 
 import android.view.View;
-import android.widget.FrameLayout;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class AlbumListActivity extends AppCompatActivity {
+public class AlbumListActivity extends AppCompatActivity implements  AlbumOnclick {
 
-    private int chooseMode = PictureMimeType.ofAll();//选择模式
-    private List<LocalMedia> selectList = new ArrayList<>();
     private AlbumListViewModel viewModel;
     private RecyclerView recyclerView;
     private AlbumListAdapter albumListAdapter;
-    /*private AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-            AppDatabase.class, "roomDemo-database")
-            //下面注释表示允许主线程进行数据库操作，但是不推荐这样做。
-            //他可能造成主线程lock以及anr
-            //所以我们的操作都是在新线程完成的
-            // .allowMainThreadQueries()
-            .build();*/
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +50,7 @@ public class AlbumListActivity extends AppCompatActivity {
                 return false;//oldItem.getConent().contains(newItem.getConent()) && oldItem.getLocalMediaList().equals(newItem.getLocalMediaList());
             }
         },this);
+        albumListAdapter.setAlbumOnclickListener(this::Onclick);
         recyclerView.setAdapter(albumListAdapter);
         viewModel.getPagedListLiveData().observe(this, new Observer<PagedList<Dynamic>>() {
             @Override
@@ -92,5 +68,13 @@ public class AlbumListActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+    }
+
+    @Override
+    public void Onclick(ImageView[] imageViews, ArrayList<String> paths, int position) {
+/*
+        Zoomy.Builder builder = new Zoomy.Builder(this).target(imageViews[position]);
+        builder.register();*/
+        //startImageActivity(this,imageViews,(String[]) paths.toArray(),position);
     }
 }

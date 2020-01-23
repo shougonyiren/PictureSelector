@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.luck.picture.lib.photoview;
+package com.luck.picture.lib.photoviewluck;
 
 import android.content.Context;
 import android.view.MotionEvent;

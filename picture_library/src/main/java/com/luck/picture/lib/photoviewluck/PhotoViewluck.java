@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.luck.picture.lib.photoview;
+package com.luck.picture.lib.photoviewluck;
 
 import android.content.Context;
 import android.graphics.Matrix;
@@ -28,20 +28,20 @@ import android.widget.ImageView;
  * A zoomable {@link ImageView}. See {@link PhotoViewAttacher} for most of the details on how the zooming
  * is accomplished
  */
-public class PhotoView extends ImageView {
+public class PhotoViewluck extends ImageView {
 
     private PhotoViewAttacher attacher;
     private ScaleType pendingScaleType;
 
-    public PhotoView(Context context) {
+    public PhotoViewluck(Context context) {
         this(context, null);
     }
 
-    public PhotoView(Context context, AttributeSet attr) {
+    public PhotoViewluck(Context context, AttributeSet attr) {
         this(context, attr, 0);
     }
 
-    public PhotoView(Context context, AttributeSet attr, int defStyle) {
+    public PhotoViewluck(Context context, AttributeSet attr, int defStyle) {
         super(context, attr, defStyle);
         init();
     }

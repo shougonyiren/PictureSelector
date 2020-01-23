@@ -39,7 +39,7 @@ import com.luck.picture.lib.dialog.PictureCustomDialog;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.listener.ImageCompleteCallback;
 import com.luck.picture.lib.permissions.PermissionChecker;
-import com.luck.picture.lib.photoview.PhotoView;
+import com.luck.picture.lib.photoviewluck.PhotoViewluck;
 import com.luck.picture.lib.tools.AttrsUtils;
 import com.luck.picture.lib.tools.BitmapUtils;
 import com.luck.picture.lib.tools.DateUtils;
@@ -253,7 +253,7 @@ public class PictureExternalPreviewActivity extends PictureBaseActivity implemen
                 contentView = LayoutInflater.from(container.getContext())
                         .inflate(R.layout.picture_image_preview, container, false);
                 // 常规图控件
-                final PhotoView imageView = contentView.findViewById(R.id.preview_image);
+                final PhotoViewluck imageView = contentView.findViewById(R.id.preview_image);
                 // 长图控件
                 final SubsamplingScaleImageView longImageView = contentView.findViewById(R.id.longImg);
                 // 视频播放按钮

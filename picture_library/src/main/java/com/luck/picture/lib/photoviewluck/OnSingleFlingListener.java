@@ -1,4 +1,4 @@
-package com.luck.picture.lib.photoview;
+package com.luck.picture.lib.photoviewluck;
 
 import android.view.MotionEvent;
 

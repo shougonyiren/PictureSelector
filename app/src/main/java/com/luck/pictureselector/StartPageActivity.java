@@ -1,11 +1,10 @@
 package com.luck.pictureselector;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.liuaho.base.BaseActivity;
+import com.luck.pictureselector.ui.AlbumList.AlbumListActivity;
 
 public class StartPageActivity extends BaseActivity {
 
@@ -13,7 +12,7 @@ public class StartPageActivity extends BaseActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //setContentView(R.layout.activity_start_page);
-        startActivity(new Intent(this,AlbumListActivity.class));//设置启动页结束要打开的Activity
+        startActivity(new Intent(this, AlbumListActivity.class));//设置启动页结束要打开的Activity
         finish();
 /*        Thread myThread = new Thread() {//创建子线程
             @Override

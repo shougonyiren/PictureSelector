@@ -1,21 +1,16 @@
-package com.luck.pictureselector;
+package com.luck.pictureselector.ui.AlbumList;
 
-import android.app.Application;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.ImageDecoder;
-import android.net.Uri;
-import android.os.Build;
+import android.graphics.drawable.Drawable;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -23,29 +18,29 @@ import androidx.paging.PagedListAdapter;
 import androidx.recyclerview.widget.AsyncDifferConfig;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.ListUpdateCallback;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.target.Target;
+import com.bumptech.glide.request.transition.Transition;
 import com.liuaho.repository.Dynamic;
-import com.luck.picture.lib.decoration.GridSpacingItemDecoration;
-import com.luck.picture.lib.tools.ScreenUtils;
+import com.luck.pictureselector.MyImageDialog;
+import com.luck.pictureselector.R;
 import com.luck.pictureselector.ui.ExtendTextview;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.AlbumViewHolder> {
-/*
-    private List<Dynamic> dynamicList;*/
+
+    AlbumOnclick listener;
+    //注册监听事件
+    public void setAlbumOnclickListener(AlbumOnclick listener) {
+        this.listener = listener;
+    }
     Context context;
     protected AlbumListAdapter(@NonNull DiffUtil.ItemCallback<Dynamic> diffCallback) {
         super(diffCallback);
@@ -87,6 +82,7 @@ public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.
         ExtendTextview extendTextview;
         RecyclerView recyclerView;
         TextView timetView;
+
         public AlbumViewHolder(@NonNull View itemView) {
             super(itemView);
             extendTextview=itemView.findViewById(R.id.content_text);
@@ -99,6 +95,7 @@ public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.
     }
     private class  itemAdapter extends RecyclerView.Adapter<Imageviewholder>{
         private ArrayList<String> paths;
+        private ImageView[] imageViews;
         @NonNull
         @Override
         public Imageviewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -111,6 +108,10 @@ public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.
         @Override
         public void onBindViewHolder(@NonNull Imageviewholder holder, int position) {
             Log.d("Imageviewholder","onBindViewHolder");
+            if (imageViews == null) {
+                imageViews = new ImageView[paths.size()];
+            }
+            imageViews[position] = holder.imageView;
             Glide
                     .with( context )
                     .load(paths.get(position))
@@ -119,7 +120,17 @@ public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    view.setDrawingCacheEnabled(true);
+                    /*SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
+                        @Override
+                        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
 
+                        }
+                    };*/
+                    MyImageDialog myImageDialog = new MyImageDialog(context,R.style.dialogWindowAnim,0,-300,paths.get(position));
+                    myImageDialog.show();
+
+                    //listener.Onclick(imageViews,paths,position);
                 }
             });
         }

@@ -37,7 +37,7 @@
 
         <activity
             android:label="@string/title_activity_album_list"
-            android:name=".AlbumListActivity"
+            android:name=".ui.AlbumList.AlbumListActivity"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <meta-data

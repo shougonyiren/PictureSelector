@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package com.luck.picture.lib.photoview;
+package com.luck.picture.lib.photoviewluck;
 
 import android.content.Context;
 import android.graphics.Matrix;
@@ -32,9 +32,9 @@ import android.widget.ImageView.ScaleType;
 import android.widget.OverScroller;
 
 /**
- * The component of {@link PhotoView} which does the work allowing for zooming, scaling, panning, etc.
+ * The component of {@link PhotoViewluck} which does the work allowing for zooming, scaling, panning, etc.
  * It is made public in case you need to subclass something other than {@link ImageView} and still
- * gain the functionality that {@link PhotoView} offers
+ * gain the functionality that {@link PhotoViewluck} offers
  */
 public class PhotoViewAttacher implements View.OnTouchListener,
         View.OnLayoutChangeListener {

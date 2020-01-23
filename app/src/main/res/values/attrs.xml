@@ -1,0 +1,6 @@
+<resources>
+<!-- 弹出查看大图 -->
+<declare-styleable name="AlertImageView">
+    <attr name="url" format="string" />
+</declare-styleable>
+</resources>

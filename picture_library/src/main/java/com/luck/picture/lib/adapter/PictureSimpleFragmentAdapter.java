@@ -17,7 +17,7 @@ import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.config.PictureSelectionConfig;
 import com.luck.picture.lib.entity.LocalMedia;
-import com.luck.picture.lib.photoview.PhotoView;
+import com.luck.picture.lib.photoviewluck.PhotoViewluck;
 import com.luck.picture.lib.tools.JumpUtils;
 import com.luck.picture.lib.tools.MediaUtils;
 import com.luck.picture.lib.tools.SdkVersionUtils;
@@ -95,7 +95,7 @@ public class PictureSimpleFragmentAdapter extends PagerAdapter {
             contentView = LayoutInflater.from(container.getContext())
                     .inflate(R.layout.picture_image_preview, container, false);
             // 常规图控件
-            final PhotoView imageView = contentView.findViewById(R.id.preview_image);
+            final PhotoViewluck imageView = contentView.findViewById(R.id.preview_image);
             // 长图控件
             final SubsamplingScaleImageView longImg = contentView.findViewById(R.id.longImg);
             // 视频播放按钮
