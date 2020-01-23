@@ -1,10 +1,8 @@
-package com.liuaho.base;
+package com.luck.pictureselector;
 
 import android.app.Application;
 
 import androidx.room.Room;
-
-import com.liuaho.repository.AppDatabase;
 
 public class MyApp extends Application {
 
@@ -14,7 +12,7 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-        appDB = Room.databaseBuilder(this,AppDatabase.class,"dynamic_info")
+        appDB = Room.databaseBuilder(this,AppDatabase.class,"Dynamic")
                 .addMigrations()
                 .allowMainThreadQueries()
                 .build();

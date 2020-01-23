@@ -47,7 +47,7 @@ public final class PictureSelectionConfig implements Parcelable {
     public int themeStyleId;
     public int selectionMode;
     public int maxSelectNum;
-    public int minSelectNum;
+    public int minSelectNum=1;
     public int maxVideoSelectNum;
     public int minVideoSelectNum;
     public int videoQuality;

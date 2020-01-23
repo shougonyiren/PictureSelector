@@ -23,7 +23,7 @@ import java.util.List;
 public class Dynamic  implements Parcelable {
     @NonNull
     @PrimaryKey
-    private Date time;//时间戳
+    private String time;//时间戳
 
     private  String conent;//内容
 
@@ -33,7 +33,7 @@ public class Dynamic  implements Parcelable {
     public Dynamic(String conent, List<LocalMedia> localMediaList) {
         this.conent = conent;
         this.localMediaList = localMediaList;
-        this.time=new Date();
+        this.time=new Date().toString();
     }
 
     public Dynamic() {
@@ -68,11 +68,11 @@ public class Dynamic  implements Parcelable {
     }
 
     @NonNull
-    public Date getTime() {
+    public String getTime() {
         return time;
     }
 
-    public void setTime(@NonNull Date time) {
+    public void setTime(@NonNull String time) {
         this.time = time;
     }
 
@@ -87,7 +87,14 @@ public class Dynamic  implements Parcelable {
     public List<LocalMedia> getLocalMediaList() {
         return localMediaList;
     }
-
+    public ArrayList<String> getpaths(){
+        ArrayList<String> paths=new ArrayList<>();
+        for (LocalMedia a:
+            localMediaList ) {
+            paths.add(a.getPath());
+        }
+        return paths;
+    }
     public void setLocalMediaList(List<LocalMedia> localMediaList) {
         this.localMediaList = localMediaList;
     }

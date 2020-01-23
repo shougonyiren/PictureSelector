@@ -158,7 +158,7 @@ public class CustomCameraView extends RelativeLayout {
             public void recordStart() {
                 mSwitchCamera.setVisibility(INVISIBLE);
                 mFlashLamp.setVisibility(INVISIBLE);
-                mCameraView.setCaptureMode(androidx.camera.view.CameraView.CaptureMode.VIDEO);
+                mCameraView.setCaptureMode(CameraView.CaptureMode.VIDEO);
                 mCameraView.startRecording(createVideoFile(), ContextCompat.getMainExecutor(getContext()),
                         new VideoCapture.OnVideoSavedCallback() {
                             @Override

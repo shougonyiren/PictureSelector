@@ -183,8 +183,7 @@ public class PictureSelectorActivity extends PictureBaseActivity implements View
         // 解决调用 notifyItemChanged 闪烁问题,取消默认动画
         ((SimpleItemAnimator) mPictureRecycler.getItemAnimator())
                 .setSupportsChangeAnimations(false);
-        if (config.isFallbackVersion2
-                || Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+        if (config.isFallbackVersion2) {
             loadAllMediaData();
         }
         mTvEmpty.setText(config.chooseMode == PictureMimeType.ofAudio() ?

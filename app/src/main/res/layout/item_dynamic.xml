@@ -10,11 +10,11 @@
         android:layout_height="wrap_content"
         android:layout_width="wrap_content"
         app:max_lines="2"
-        android:text="TextViewsfafafasfasfsafasgasgasgasgasgsgagdzfvsdnfsdjgvnfdlnhetmhketnhontelhntd;kgnlrgnlrnsgklsrnglrsnhndklhndlhndklnbd.fmb" />
+        android:text="T" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_item_AlbumList"
-        android:layout_height="wrap_content"
+        android:layout_height="50dp"
         android:layout_width="match_parent" >
 
     </androidx.recyclerview.widget.RecyclerView>

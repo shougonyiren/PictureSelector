@@ -39,9 +39,11 @@ import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.picture.lib.tools.PictureFileUtils;
 import com.luck.picture.lib.tools.ScreenUtils;
 import com.luck.picture.lib.tools.ToastUtils;
+import com.luck.pictureselector.App;
 import com.luck.pictureselector.AppDatabase;
 import com.luck.pictureselector.FullyGridLayoutManager;
 import com.luck.pictureselector.R;
+import com.luck.pictureselector.ViewModel.DynamicDao;
 import com.luck.pictureselector.adapter.GridImageAdapter;
 import com.luck.pictureselector.listener.DragListener;
 
@@ -51,6 +53,7 @@ import java.util.List;
 
 import io.reactivex.Completable;
 import io.reactivex.CompletableObserver;
+import io.reactivex.Flowable;
 import io.reactivex.disposables.Disposable;
 
 public class MyPictureSelectorActivity extends AppCompatActivity {
@@ -72,13 +75,7 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
     private Button select_finish;
     private EditText content_editText;
     //得到AppDatabase 对象
-    private AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-            AppDatabase.class, "roomDemo-database")
-            //下面注释表示允许主线程进行数据库操作，但是不推荐这样做。
-            //他可能造成主线程lock以及anr
-            //所以我们的操作都是在新线程完成的
-            // .allowMainThreadQueries()
-            .build();
+    private AppDatabase db = App.getInstance().getAppDB();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -90,13 +87,16 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
         mRecyclerView=findViewById(R.id.m_recycler);
         tvDeleteText=findViewById(R.id.tv_delete_text);
         select_finish=findViewById(R.id.select_finish);
+        content_editText=findViewById(R.id.content_editText);
         select_finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //TODO select_finish
-                Dynamic dynamic=new Dynamic(content_editText.getText().toString(),selectList);
-                Completable completable = db.dynamicDao().insertOneAnime(dynamic);
-                completable.subscribe(new CompletableObserver() {
+                //TODO No layout manager attached; skipping layout
+                Dynamic dynamic=new Dynamic(content_editText.getText()==null?"":content_editText.getText().toString(),selectList);
+                long a= db.dynamicDao().insertOneAnime(dynamic);
+                Log.d(TAG, "onClick: ."+a);
+                onBackPressed();
+/*                completable.subscribe(new CompletableObserver() {
                     @Override
                     public void onSubscribe(Disposable d) {
 
@@ -113,7 +113,7 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
                         ToastUtils.s(getBaseContext(),"请重试");
                         Log.d("wch", "数据插入失败:" + e.getCause().getMessage());
                     }
-                });
+                });*/
             }
         });
         select_back=findViewById(R.id.select_back);

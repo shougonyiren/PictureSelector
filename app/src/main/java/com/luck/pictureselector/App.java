@@ -6,6 +6,7 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.camera.camera2.Camera2Config;
 import androidx.camera.core.CameraXConfig;
+import androidx.room.Room;
 
 import com.luck.picture.lib.app.IApp;
 import com.luck.picture.lib.app.PictureAppMaster;
@@ -19,6 +20,8 @@ import com.luck.picture.lib.crash.PictureSelectorCrashUtils;
  */
 
 public class App extends Application implements IApp, CameraXConfig.Provider {
+    private AppDatabase appDB;
+    private static  App mInstance;
     @Override
     public void onCreate() {
         super.onCreate();
@@ -33,11 +36,29 @@ public class App extends Application implements IApp, CameraXConfig.Provider {
         });
         /** PictureSelector日志管理配制结束 **/
 
+        mInstance = this;
+/*        appDB = Room.databaseBuilder(this,AppDatabase.class,"Dynamic")
+                .addMigrations()
+                .allowMainThreadQueries()
+                .build();*/
     }
 
     @Override
     public Context getAppContext() {
         return this;
+    }
+    public static App getInstance(){
+        return mInstance;
+    }
+
+    public AppDatabase getAppDB(){
+        if(appDB==null){
+            appDB=  Room.databaseBuilder(this,AppDatabase.class,"Dynamic")
+                    .addMigrations()
+                    .allowMainThreadQueries()
+                    .build();
+        }
+        return appDB;
     }
 
     @NonNull
