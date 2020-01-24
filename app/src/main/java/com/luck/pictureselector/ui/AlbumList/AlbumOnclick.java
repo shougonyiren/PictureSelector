@@ -1,9 +1,9 @@
 package com.luck.pictureselector.ui.AlbumList;
 
-import android.widget.ImageView;
+import com.luck.picture.lib.entity.LocalMedia;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface AlbumOnclick {
-    void Onclick(ImageView[] imageViews, ArrayList<String> paths, int position);
+    void Onclick(List<LocalMedia> paths, int position);
 }

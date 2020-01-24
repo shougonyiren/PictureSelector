@@ -38,6 +38,7 @@
         <activity
             android:label="@string/title_activity_album_list"
             android:name=".ui.AlbumList.AlbumListActivity"
+            android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar"></activity>
 
         <meta-data

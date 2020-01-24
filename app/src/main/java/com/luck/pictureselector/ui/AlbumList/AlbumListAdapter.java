@@ -25,12 +25,14 @@ import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.target.Target;
 import com.bumptech.glide.request.transition.Transition;
 import com.liuaho.repository.Dynamic;
+import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.pictureselector.MyImageDialog;
 import com.luck.pictureselector.R;
 import com.luck.pictureselector.ui.ExtendTextview;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
@@ -72,7 +74,7 @@ public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.
         Log.d("onBindViewHolder","AlbumViewHolder");
         holder.timetView.setText(Objects.requireNonNull(getItem(position)).getTime().toString());
         holder.extendTextview.setText(Objects.requireNonNull(getItem(position)).getConent());
-        itemAdapter itemAdapter=new itemAdapter(getItem(position).getpaths());
+        itemAdapter itemAdapter=new itemAdapter(getItem(position).getLocalMediaList());
         holder.recyclerView.setAdapter(itemAdapter);
     }
 
@@ -94,8 +96,8 @@ public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.
         }
     }
     private class  itemAdapter extends RecyclerView.Adapter<Imageviewholder>{
-        private ArrayList<String> paths;
-        private ImageView[] imageViews;
+        private List<LocalMedia> paths;
+       // private ImageView[] imageViews;
         @NonNull
         @Override
         public Imageviewholder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -108,34 +110,20 @@ public class AlbumListAdapter extends PagedListAdapter<Dynamic,AlbumListAdapter.
         @Override
         public void onBindViewHolder(@NonNull Imageviewholder holder, int position) {
             Log.d("Imageviewholder","onBindViewHolder");
-            if (imageViews == null) {
-                imageViews = new ImageView[paths.size()];
-            }
-            imageViews[position] = holder.imageView;
             Glide
                     .with( context )
-                    .load(paths.get(position))
+                    .load(paths.get(position).getPath())
                     .thumbnail( 0.1f )
                     .into( holder.imageView);
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    view.setDrawingCacheEnabled(true);
-                    /*SimpleTarget<Drawable> simpleTarget = new SimpleTarget<Drawable>() {
-                        @Override
-                        public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-
-                        }
-                    };*/
-                    MyImageDialog myImageDialog = new MyImageDialog(context,R.style.dialogWindowAnim,0,-300,paths.get(position));
-                    myImageDialog.show();
-
-                    //listener.Onclick(imageViews,paths,position);
+                    listener.Onclick(paths,position);
                 }
             });
         }
 
-        public itemAdapter (ArrayList<String> paths) {
+        public itemAdapter (List<LocalMedia> paths) {
             this.paths = paths;
         }
 

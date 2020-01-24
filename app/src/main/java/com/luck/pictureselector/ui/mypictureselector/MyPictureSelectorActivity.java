@@ -46,6 +46,7 @@ import com.luck.pictureselector.R;
 import com.luck.pictureselector.ViewModel.DynamicDao;
 import com.luck.pictureselector.adapter.GridImageAdapter;
 import com.luck.pictureselector.listener.DragListener;
+import com.luck.pictureselector.ui.AlbumList.AlbumListActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -82,41 +83,23 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.my_picture_selector_activity);
         mViewModel = ViewModelProviders.of(this).get(MyPictureSelectorViewModel.class);
-        FullyGridLayoutManager manager = new FullyGridLayoutManager(this,
-                4, GridLayoutManager.VERTICAL, false);
-        mRecyclerView=findViewById(R.id.m_recycler);
-        tvDeleteText=findViewById(R.id.tv_delete_text);
-        select_finish=findViewById(R.id.select_finish);
-        content_editText=findViewById(R.id.content_editText);
+        FullyGridLayoutManager manager = new FullyGridLayoutManager(this, 4, GridLayoutManager.VERTICAL, false);
+        mRecyclerView = findViewById(R.id.m_recycler);
+        tvDeleteText = findViewById(R.id.tv_delete_text);
+        select_finish = findViewById(R.id.select_finish);
+        content_editText = findViewById(R.id.content_editText);
         select_finish.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //TODO No layout manager attached; skipping layout
-                Dynamic dynamic=new Dynamic(content_editText.getText()==null?"":content_editText.getText().toString(),selectList);
-                long a= db.dynamicDao().insertOneAnime(dynamic);
-                Log.d(TAG, "onClick: ."+a);
-                onBackPressed();
-/*                completable.subscribe(new CompletableObserver() {
-                    @Override
-                    public void onSubscribe(Disposable d) {
-
-                    }
-
-                    @Override
-                    public void onComplete() {
-                        //Log.d("wch", "数据插入成功");
-                        onBackPressed();
-                    }
-
-                    @Override
-                    public void onError(Throwable e) {
-                        ToastUtils.s(getBaseContext(),"请重试");
-                        Log.d("wch", "数据插入失败:" + e.getCause().getMessage());
-                    }
-                });*/
+                Dynamic dynamic = new Dynamic(content_editText.getText() == null ? "" : content_editText.getText().toString(), selectList);
+                long a = db.dynamicDao().insertOneAnime(dynamic);
+                Log.d(TAG, "onClick: ." + a);
+                Intent intent = new Intent(getApplicationContext(), AlbumListActivity.class);
+                startActivity(intent);
             }
         });
-        select_back=findViewById(R.id.select_back);
+        select_back = findViewById(R.id.select_back);
         select_back.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -124,8 +107,7 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
             }
         });
         mRecyclerView.setLayoutManager(manager);
-        mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(4,
-                ScreenUtils.dip2px(this, 8), false));
+        mRecyclerView.addItemDecoration(new GridSpacingItemDecoration(4, ScreenUtils.dip2px(this, 8), false));
         mAdapter = new GridImageAdapter(this, onAddPicClickListener);
         mAdapter.setList(selectList);
         mAdapter.setSelectMax(100);
@@ -186,8 +168,7 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
                 if (itemViewType != GridImageAdapter.TYPE_CAMERA) {
                     viewHolder.itemView.setAlpha(0.7f);
                 }
-                return makeMovementFlags(ItemTouchHelper.DOWN | ItemTouchHelper.UP
-                        | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, 0);
+                return makeMovementFlags(ItemTouchHelper.DOWN | ItemTouchHelper.UP | ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT, 0);
             }
 
             @Override
@@ -217,8 +198,7 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
-                                    @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder, float dX, float dY, int actionState, boolean isCurrentlyActive) {
                 int itemViewType = viewHolder.getItemViewType();
                 if (itemViewType != GridImageAdapter.TYPE_CAMERA) {
                     if (null == mDragListener) {
@@ -292,15 +272,14 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
         mItemTouchHelper.attachToRecyclerView(mRecyclerView);
 
         // 注册外部预览图片删除按钮回调
-        BroadcastManager.getInstance(this).registerReceiver(broadcastReceiver,
-                BroadcastAction.ACTION_DELETE_PREVIEW_POSITION);
+        BroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, BroadcastAction.ACTION_DELETE_PREVIEW_POSITION);
 
     }
 
     private GridImageAdapter.onAddPicClickListener onAddPicClickListener = new GridImageAdapter.onAddPicClickListener() {
         @Override
         public void onAddPicClick() {
-            mViewModel.select(MyPictureSelectorActivity.this,selectList);
+            mViewModel.select(MyPictureSelectorActivity.this, selectList);
         }
     };
 
@@ -335,6 +314,7 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
             }
         }
     }
+
     /**
      * 重置
      */
@@ -345,6 +325,7 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
         }
         isUpward = false;
     }
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -373,6 +354,7 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
 
     /**
      * 获取权限
+     *
      * @param requestCode
      * @param permissions
      * @param grantResults
@@ -387,8 +369,7 @@ public class MyPictureSelectorActivity extends AppCompatActivity {
                     if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                         PictureFileUtils.deleteCacheDirFile(MyPictureSelectorActivity.this, PictureMimeType.ofImage());
                     } else {
-                        Toast.makeText(MyPictureSelectorActivity.this,
-                                getString(R.string.picture_jurisdiction), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MyPictureSelectorActivity.this, getString(R.string.picture_jurisdiction), Toast.LENGTH_SHORT).show();
                     }
                 }
                 break;
