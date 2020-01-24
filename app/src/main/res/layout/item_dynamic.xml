@@ -3,6 +3,8 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
+    android:elevation="3dp"
+    android:background="#37FF0101"
     android:layout_width="match_parent">
 
     <com.luck.pictureselector.ui.ExtendTextview
@@ -18,10 +20,8 @@
         android:layout_width="match_parent" >
 
     </androidx.recyclerview.widget.RecyclerView>
-
     <TextView
         android:id="@+id/dynamic_time_text"
         android:layout_height="wrap_content"
         android:layout_width="match_parent" />
-
 </LinearLayout>

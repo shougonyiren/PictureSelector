@@ -12,6 +12,7 @@ import androidx.room.TypeConverters;
 
 import com.luck.picture.lib.entity.LocalMedia;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -33,7 +34,8 @@ public class Dynamic  implements Parcelable {
     public Dynamic(String conent, List<LocalMedia> localMediaList) {
         this.conent = conent;
         this.localMediaList = localMediaList;
-        this.time=new Date().toString();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        this.time=format.format(new Date());
     }
 
     public Dynamic() {

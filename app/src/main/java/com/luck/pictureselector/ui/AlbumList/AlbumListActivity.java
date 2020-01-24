@@ -43,6 +43,7 @@ public class AlbumListActivity extends AppCompatActivity implements  AlbumOnclic
         recyclerView=findViewById(R.id.dynamic_recyclerView);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
+
         albumListAdapter=new AlbumListAdapter(new DiffUtil.ItemCallback<Dynamic>() {
 
             @Override

@@ -17,7 +17,7 @@ public interface DynamicDao {
     @Query("SELECT * FROM  Dynamic order by time desc")
     List<Dynamic> getAllAnime(); //加载所有动漫数据
 
-    @Query("SELECT * FROM Dynamic order by time desc")
+    @Query("SELECT * FROM Dynamic order by time desc ")//order by time desc
     DataSource.Factory<Integer,Dynamic> findAll(); //根据名字加载动漫
 
     @Insert
