@@ -3,4 +3,5 @@
     <string name="app_drag_delete" translatable="false">拖动到此处删除</string>
     <string name="app_let_go_drag_delete" translatable="false">松手即可删除</string>
     <string name="title_activity_album_list" translatable="false">AlbumListActivity</string>
+    <string name="MyAlbum">我的相册</string>
 </resources>

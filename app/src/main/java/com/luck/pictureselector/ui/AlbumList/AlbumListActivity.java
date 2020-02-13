@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.liuaho.repository.Dynamic;
 import com.luck.picture.lib.PictureSelectionModel;
@@ -34,11 +35,13 @@ public class AlbumListActivity extends AppCompatActivity implements  AlbumOnclic
     private AlbumListViewModel viewModel;
     private RecyclerView recyclerView;
     private AlbumListAdapter albumListAdapter;
+    private AppBarLayout appBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_list);
+        appBarLayout=findViewById(R.id.appBarLayout2);
         viewModel=  ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(AlbumListViewModel.class);
         recyclerView=findViewById(R.id.dynamic_recyclerView);
         LinearLayoutManager manager = new LinearLayoutManager(this);
