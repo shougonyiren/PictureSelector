@@ -24,9 +24,13 @@
         android:name=".App"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <service
+            android:exported="false"
+            android:name=".service.ImageAnalysisIntentService"></service>
+
         <activity
             android:label="@string/title_activity_settings"
-            android:name=".ui.AlbumList.SettingsActivity"></activity>
+            android:name=".ui.setting.SettingsActivity" />
         <activity
             android:name=".StartPageActivity"
             android:theme="@style/SplashActivityTheme">

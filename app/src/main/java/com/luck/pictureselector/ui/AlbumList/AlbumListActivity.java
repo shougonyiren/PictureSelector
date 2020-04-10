@@ -14,6 +14,7 @@ import com.luck.pictureselector.GlideEngine;
 import com.luck.pictureselector.R;
 import com.luck.pictureselector.ViewModel.AlbumListViewModel;
 import com.luck.pictureselector.ui.mypictureselector.MyPictureSelectorActivity;
+import com.luck.pictureselector.ui.setting.SettingsActivity;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +26,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.view.MenuItem;
 import android.view.View;
 
 import java.util.List;
@@ -50,6 +52,19 @@ public class AlbumListActivity extends AppCompatActivity implements  AlbumOnclic
         recyclerView.setLayoutManager(manager);
         toolbar=findViewById(R.id.AlbumListToolbar);
         toolbar.inflateMenu(R.menu.mainmenu);
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.toolbar_setting:
+                    {
+                        Intent intent=new Intent(getBaseContext(), SettingsActivity.class);
+                        startActivity(intent);
+                    }
+                }
+                return false;
+            }
+        });
 
         /*setSupportActionBar(toolbar);
         mActionBarToolbar.setTitleEnabled(false);
@@ -78,8 +93,6 @@ public class AlbumListActivity extends AppCompatActivity implements  AlbumOnclic
                 albumListAdapter.submitList(dynamics);
             }
         });
-        Toolbar toolbar = findViewById(R.id.toolbar1);
-        setSupportActionBar(toolbar);
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
