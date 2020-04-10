@@ -5,13 +5,12 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 
 import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.liuaho.repository.Dynamic;
-import com.luck.picture.lib.PictureSelectionModel;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.luck.pictureselector.GlideEngine;
-import com.luck.pictureselector.MainActivity;
 import com.luck.pictureselector.R;
 import com.luck.pictureselector.ViewModel.AlbumListViewModel;
 import com.luck.pictureselector.ui.mypictureselector.MyPictureSelectorActivity;
@@ -35,18 +34,30 @@ public class AlbumListActivity extends AppCompatActivity implements  AlbumOnclic
     private AlbumListViewModel viewModel;
     private RecyclerView recyclerView;
     private AlbumListAdapter albumListAdapter;
+    private Toolbar toolbar;
+    private CollapsingToolbarLayout mActionBarToolbar;
     private AppBarLayout appBarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_album_list);
-        appBarLayout=findViewById(R.id.appBarLayout2);
+        mActionBarToolbar=findViewById(R.id.appBarLayout2);
+        appBarLayout=findViewById(R.id.AlbumList_appbar_layout);
         viewModel=  ViewModelProvider.AndroidViewModelFactory.getInstance(getApplication()).create(AlbumListViewModel.class);
         recyclerView=findViewById(R.id.dynamic_recyclerView);
         LinearLayoutManager manager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(manager);
+        toolbar=findViewById(R.id.AlbumListToolbar);
+        toolbar.inflateMenu(R.menu.mainmenu);
 
+        /*setSupportActionBar(toolbar);
+        mActionBarToolbar.setTitleEnabled(false);
+        toolbar.setTitle("My Title");
+        getSupportActionBar().setTitle(R.string.MyAlbum);*/
+
+        //appBarLayout.setTitle(getBaseContext().getText(R.string.MyAlbum));
+        //toolbar.setTitle(R.string.MyAlbum);
         albumListAdapter=new AlbumListAdapter(new DiffUtil.ItemCallback<Dynamic>() {
 
             @Override
@@ -59,7 +70,7 @@ public class AlbumListActivity extends AppCompatActivity implements  AlbumOnclic
                 return false;//oldItem.getConent().contains(newItem.getConent()) && oldItem.getLocalMediaList().equals(newItem.getLocalMediaList());
             }
         },this);
-        albumListAdapter.setAlbumOnclickListener(( paths, position) -> Onclick(paths, position));
+        albumListAdapter.setAlbumOnclickListener(this);
         recyclerView.setAdapter(albumListAdapter);
         viewModel.getPagedListLiveData().observe(this, new Observer<PagedList<Dynamic>>() {
             @Override
@@ -78,6 +89,7 @@ public class AlbumListActivity extends AppCompatActivity implements  AlbumOnclic
             }
         });
     }
+
 
     @Override
     public void Onclick(List<LocalMedia> paths, int position) {

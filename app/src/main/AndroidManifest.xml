@@ -25,6 +25,9 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:label="@string/title_activity_settings"
+            android:name=".ui.AlbumList.SettingsActivity"></activity>
+        <activity
             android:name=".StartPageActivity"
             android:theme="@style/SplashActivityTheme">
             <intent-filter>
@@ -33,13 +36,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.mypictureselector.MyPictureSelectorActivity"></activity>
-
+        <activity android:name=".ui.mypictureselector.MyPictureSelectorActivity" />
         <activity
             android:label="@string/title_activity_album_list"
-            android:name=".ui.AlbumList.AlbumListActivity"
             android:launchMode="singleTask"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:name=".ui.AlbumList.AlbumListActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <meta-data
             android:name="android.max_aspect"
