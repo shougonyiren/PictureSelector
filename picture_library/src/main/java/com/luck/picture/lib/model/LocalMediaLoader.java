@@ -9,6 +9,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -155,6 +156,7 @@ public class LocalMediaLoader implements Handler.Callback {
                     LocalMediaFolder allImageFolder = new LocalMediaFolder();
                     List<LocalMedia> latelyImages = new ArrayList<>();
                     int count = data.getCount();
+                    Log.e("count大小", "loadAllMedia:count大小"+count);
                     if (count > 0) {
                         data.moveToFirst();
                         do {

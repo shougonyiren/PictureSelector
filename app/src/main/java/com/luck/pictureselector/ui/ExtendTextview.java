@@ -303,12 +303,4 @@ public class ExtendTextview extends AppCompatTextView {
             return false;
         }
     }
-
-    public void setToShrinkHint(String toShrinkHint) {
-        this.mToShrinkHint = toShrinkHint;
-    }
-
-    public BufferType getBufferType() {
-        return mBufferType;
-    }
 }
