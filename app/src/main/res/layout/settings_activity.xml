@@ -1,11 +1,32 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:layout_width="match_parent"
+    android:orientation="vertical">
+    <RelativeLayout
+        android:id="@+id/image_analysis_bg"
+        android:padding="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp">
+        <TextView
+            android:gravity="center"
+            android:id="@+id/tv_image_analysis"
+            android:text="@string/image_analysis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:id="@+id/image_analysis_Arrow"
+            android:layout_width="10dp"
+            android:layout_height="5dp"
+            android:layout_toRightOf="@id/tv_image_analysis"
+            android:scaleType="centerInside"
+            android:src="@drawable/my_button" />
+    </RelativeLayout>
     <TextView
-        android:id="@+id/tv_image_analysis"
-        android:text="@string/image_analysis"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:text="hahahhahahaha"
+        android:id="@+id/test1111"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"/>
+
     <FrameLayout
         android:id="@+id/settings"
         android:layout_height="wrap_content"
